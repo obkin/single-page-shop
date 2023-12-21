@@ -37,7 +37,12 @@ export class PostsController extends BaseController implements IPostsController 
 		next: NextFunction,
 	): Promise<void> {
 		const result = await this.postsService.getAllPosts();
-		this.ok(res, result);
+		if (!result) {
+			this.loggerService.error('[PostsController]: failed to get posts');
+		} else {
+			this.ok(res, result);
+			this.loggerService.log('[PostsController]: got posts');
+		}
 	}
 
 	async addPost(
