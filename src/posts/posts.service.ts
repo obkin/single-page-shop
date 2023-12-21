@@ -11,11 +11,15 @@ import { Post } from './post.entity';
 export class PostsService implements IPostsService {
 	constructor(
 		@inject(TYPES.ILogger) private loggerService: ILogger,
-		@inject(TYPES.PostsRepoitory) private usersRepository: IPostsRepository,
+		@inject(TYPES.PostsRepoitory) private postsRepository: IPostsRepository,
 	) {}
 
 	async createPost({ title, body }: PostCreateDto): Promise<PostModel> {
 		const newPost = new Post(title, body);
-		return await this.usersRepository.create(newPost);
+		return await this.postsRepository.create(newPost);
+	}
+
+	async getAllPosts(): Promise<any> {
+		return await this.postsRepository.findMany();
 	}
 }

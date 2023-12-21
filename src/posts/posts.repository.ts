@@ -17,4 +17,8 @@ export class PostsRepository implements IPostsRepository {
 			},
 		});
 	}
+
+	async findMany(): Promise<any> {
+		return await this.prismaService.client.postModel.findMany();
+	}
 }

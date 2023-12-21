@@ -11,7 +11,8 @@ datasource db {
 }
 
 model PostModel {
-  id       Int        @id @default(autoincrement())
-  title    String
-  body     String
+  id          Int        @id @default(autoincrement())
+  title       String
+  body        String
+  createdAt   DateTime   @default(now())
 }

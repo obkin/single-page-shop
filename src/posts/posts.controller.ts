@@ -23,7 +23,7 @@ export class PostsController extends BaseController implements IPostsController 
 				middlewares: [],
 			},
 			{
-				path: '/add',
+				path: '/add-post',
 				method: 'post',
 				func: this.addPost,
 				middlewares: [],
@@ -36,7 +36,8 @@ export class PostsController extends BaseController implements IPostsController 
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		this.ok(res, 'get works');
+		const result = await this.postsService.getAllPosts();
+		this.ok(res, result);
 	}
 
 	async addPost(

@@ -5,6 +5,7 @@ import { TYPES } from './types';
 import { ILogger } from './logger/logger.interface';
 import { PrismaService } from './database/prisma.service';
 import { PostsController } from './posts/posts.controller';
+import cors from 'cors';
 
 @injectable()
 export class App {
@@ -23,6 +24,7 @@ export class App {
 
 	useMiddlewares(): void {
 		this.app.use(json());
+		this.app.use(cors());
 	}
 
 	useRoutes(): void {
