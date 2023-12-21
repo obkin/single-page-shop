@@ -1,3 +1,21 @@
+import { PostModel } from '@prisma/client';
+import { PostCreateDto } from './dto/post-create-dto';
 import { IPostsService } from './posts.service.interface';
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../types';
+import { IPostsRepository } from './posts.repository.interface';
+import { ILogger } from '../logger/logger.interface';
+import { Post } from './post.entity';
 
-export class PostsService implements IPostsService {}
+@injectable()
+export class PostsService implements IPostsService {
+	constructor(
+		@inject(TYPES.ILogger) private loggerService: ILogger,
+		@inject(TYPES.PostsRepoitory) private usersRepository: IPostsRepository,
+	) {}
+
+	async createPost({ title, body }: PostCreateDto): Promise<PostModel> {
+		const newPost = new Post(title, body);
+		return await this.usersRepository.create(newPost);
+	}
+}
