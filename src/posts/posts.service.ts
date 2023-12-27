@@ -14,12 +14,34 @@ export class PostsService implements IPostsService {
 		@inject(TYPES.PostsRepoitory) private postsRepository: IPostsRepository,
 	) {}
 
-	async createPost({ title, body }: PostCreateDto): Promise<PostModel> {
+	async createPost({ title, body }: PostCreateDto): Promise<PostModel | void> {
 		const newPost = new Post(title, body);
-		return await this.postsRepository.create(newPost);
+		try {
+			return await this.postsRepository.create(newPost);
+		} catch (e) {
+			if (e instanceof Error) {
+				this.loggerService.error(`[PostsService]: ${e.message}`);
+			}
+		}
 	}
 
-	async getAllPosts(): Promise<any> {
-		return await this.postsRepository.findMany();
+	async getAllPosts(): Promise<any | void> {
+		try {
+			return await this.postsRepository.findMany();
+		} catch (e) {
+			if (e instanceof Error) {
+				this.loggerService.error(`[PostsService]: ${e.message}`);
+			}
+		}
+	}
+
+	async removePost(postId: number): Promise<any | void> {
+		try {
+			return await this.postsRepository.remove(postId);
+		} catch (e) {
+			if (e instanceof Error) {
+				this.loggerService.error(`[PostsService]: ${e.message}`);
+			}
+		}
 	}
 }

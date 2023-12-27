@@ -28,21 +28,13 @@ export class PostsController extends BaseController implements IPostsController 
 				func: this.addPost,
 				middlewares: [],
 			},
+			{
+				path: '/remove-post/:id',
+				method: 'delete',
+				func: this.removePost,
+				middlewares: [],
+			},
 		]);
-	}
-
-	async getPosts(
-		req: Request<{}, {}, PostCreateDto>,
-		res: Response,
-		next: NextFunction,
-	): Promise<void> {
-		const result = await this.postsService.getAllPosts();
-		if (!result) {
-			this.loggerService.error('[PostsController]: failed to get posts');
-		} else {
-			this.ok(res, result);
-			this.loggerService.log('[PostsController]: got posts');
-		}
 	}
 
 	async addPost(
@@ -56,6 +48,30 @@ export class PostsController extends BaseController implements IPostsController 
 		} else {
 			this.ok(res, `{ title: ${result.title}, body: ${result.body} }`);
 			this.loggerService.log('[PostsController]: new post created');
+		}
+	}
+
+	async getPosts(
+		req: Request<{}, {}, PostCreateDto>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		const result = await this.postsService.getAllPosts();
+		if (!result) {
+			this.loggerService.error('[PostsController]: failed to get posts');
+		} else {
+			this.ok(res, result);
+			this.loggerService.log('[PostsController]: posts sent');
+		}
+	}
+
+	async removePost(req: Request, res: Response, next: NextFunction): Promise<void> {
+		const result = await this.postsService.removePost(Number(req.params.id));
+		if (!result) {
+			this.loggerService.error('[PostsController]: failed to delete post');
+		} else {
+			this.ok(res, `Post #${req.params.id} was deleted`);
+			this.loggerService.log(`[PostsController]: post #${req.params.id} was deleted`);
 		}
 	}
 }
