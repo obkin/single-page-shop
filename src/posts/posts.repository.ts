@@ -14,10 +14,18 @@ export class PostsRepository implements IPostsRepository {
 	) {}
 
 	async create({ title, body }: Post): Promise<PostModel> {
-		return this.prismaService.client.postModel.create({
+		return await this.prismaService.client.postModel.create({
 			data: {
 				title,
 				body,
+			},
+		});
+	}
+
+	async findOne(postId: number): Promise<PostModel | null> {
+		return await this.prismaService.client.postModel.findFirst({
+			where: {
+				id: postId,
 			},
 		});
 	}
@@ -30,6 +38,18 @@ export class PostsRepository implements IPostsRepository {
 		return await this.prismaService.client.postModel.delete({
 			where: {
 				id: postId,
+			},
+		});
+	}
+
+	async update(postId: number, { title, body }: Post): Promise<PostModel> {
+		return await this.prismaService.client.postModel.update({
+			where: {
+				id: postId,
+			},
+			data: {
+				title,
+				body,
 			},
 		});
 	}

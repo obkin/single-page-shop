@@ -40,6 +40,26 @@ export class PostsService implements IPostsService {
 			return await this.postsRepository.remove(postId);
 		} catch (e) {
 			if (e instanceof Error) {
+				this.loggerService.error(`[PostsService]: post #${postId} not found`);
+			}
+		}
+	}
+
+	async updatePost(postId: number, updatedData: Post): Promise<PostModel | void> {
+		try {
+			const currentPost = await this.postsRepository.findOne(postId);
+
+			if (!currentPost) {
+				this.loggerService.error(`[PostsService]: post #${postId} not found`);
+			} else {
+				const updateForPost = {
+					title: updatedData.title ? updatedData.title : currentPost.title,
+					body: updatedData.body ? updatedData.body : currentPost.body,
+				};
+				return await this.postsRepository.update(postId, updateForPost as Post);
+			}
+		} catch (e) {
+			if (e instanceof Error) {
 				this.loggerService.error(`[PostsService]: ${e.message}`);
 			}
 		}

@@ -25,8 +25,20 @@ abstract class BaseController {
 		return this.send<T>(res, 200, message);
 	}
 
-	public created(res: Response): ExpressReturnType {
-		return res.sendStatus(201);
+	public created<T>(res: Response, message: T): ExpressReturnType {
+		return this.send<T>(res, 201, message);
+	}
+
+	public deleted<T>(res: Response, message: T): ExpressReturnType {
+		return this.send<T>(res, 204, message);
+	}
+
+	public badRequest<T>(res: Response, message: T): ExpressReturnType {
+		return this.send<T>(res, 400, message);
+	}
+
+	public notFound<T>(res: Response, message: T): ExpressReturnType {
+		return this.send<T>(res, 404, message);
 	}
 
 	protected bindRoutes(routes: IControllerRoute[]): void {
