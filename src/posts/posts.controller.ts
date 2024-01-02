@@ -17,15 +17,15 @@ export class PostsController extends BaseController implements IPostsController 
 
 		this.bindRoutes([
 			{
-				path: '/get-posts',
-				method: 'get',
-				func: this.getPosts,
-				middlewares: [],
-			},
-			{
 				path: '/add-post',
 				method: 'post',
 				func: this.addPost,
+				middlewares: [],
+			},
+			{
+				path: '/get-posts',
+				method: 'get',
+				func: this.getPosts,
 				middlewares: [],
 			},
 			{
