@@ -25,8 +25,22 @@ export class PostsService implements IPostsService {
 		}
 	}
 
-	async getAllPosts(limit?: number): Promise<any | void> {
+	async getAllPosts(limit?: number, page?: number): Promise<any | void> {
 		if (limit) {
+			if (page) {
+				const pageSize = limit;
+				const pageNumber = page;
+				const skip = (pageNumber - 1) * pageSize;
+
+				try {
+					return await this.postsRepository.findMany(limit, skip);
+				} catch (e) {
+					if (e instanceof Error) {
+						this.loggerService.error(`[PostsService]: ${e.message}`);
+					}
+				}
+			}
+
 			try {
 				return await this.postsRepository.findMany(limit);
 			} catch (e) {

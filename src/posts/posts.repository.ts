@@ -30,9 +30,10 @@ export class PostsRepository implements IPostsRepository {
 		});
 	}
 
-	async findMany(limit?: number): Promise<any> {
+	async findMany(limit?: number, pages?: number): Promise<any> {
 		return await this.prismaService.client.postModel.findMany({
 			take: limit || 100,
+			skip: pages,
 		});
 	}
 

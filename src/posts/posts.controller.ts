@@ -64,7 +64,10 @@ export class PostsController extends BaseController implements IPostsController 
 		next: NextFunction,
 	): Promise<void> {
 		if (req.query.limit) {
-			const result = await this.postsService.getAllPosts(Number(req.query.limit));
+			const result = await this.postsService.getAllPosts(
+				Number(req.query.limit),
+				Number(req.query.page),
+			);
 			if (!result) {
 				this.notFound(res, 'ERROR: posts not found');
 				this.loggerService.error('[PostsController]: failed to get posts');
