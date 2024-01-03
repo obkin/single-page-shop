@@ -30,8 +30,10 @@ export class PostsRepository implements IPostsRepository {
 		});
 	}
 
-	async findMany(): Promise<any> {
-		return await this.prismaService.client.postModel.findMany();
+	async findMany(limit?: number): Promise<any> {
+		return await this.prismaService.client.postModel.findMany({
+			take: limit || 100,
+		});
 	}
 
 	async remove(postId: number): Promise<any> {
