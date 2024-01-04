@@ -33,7 +33,8 @@ export class PostsService implements IPostsService {
 				const skip = (pageNumber - 1) * pageSize;
 
 				try {
-					return await this.postsRepository.findMany(limit, skip);
+					const result = await this.postsRepository.findMany(limit, skip);
+					return result;
 				} catch (e) {
 					if (e instanceof Error) {
 						this.loggerService.error(`[PostsService]: ${e.message}`);
@@ -42,7 +43,8 @@ export class PostsService implements IPostsService {
 			}
 
 			try {
-				return await this.postsRepository.findMany(limit);
+				const result = await this.postsRepository.findMany(limit);
+				return result;
 			} catch (e) {
 				if (e instanceof Error) {
 					this.loggerService.error(`[PostsService]: ${e.message}`);

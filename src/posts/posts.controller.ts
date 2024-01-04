@@ -59,7 +59,7 @@ export class PostsController extends BaseController implements IPostsController 
 	}
 
 	async getPosts(
-		req: Request<{}, {}, PostCreateDto>,
+		req: Request<{}, {}, PostCreateDto, { limit?: string; page?: string }>,
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
@@ -72,7 +72,7 @@ export class PostsController extends BaseController implements IPostsController 
 				this.notFound(res, 'ERROR: posts not found');
 				this.loggerService.error('[PostsController]: failed to get posts');
 			} else {
-				this.ok(res, result);
+				this.ok(res, result, result.length);
 				this.loggerService.log('[PostsController]: posts sent');
 			}
 		} else {
@@ -81,7 +81,7 @@ export class PostsController extends BaseController implements IPostsController 
 				this.notFound(res, 'ERROR: posts not found');
 				this.loggerService.error('[PostsController]: failed to get posts');
 			} else {
-				this.ok(res, result);
+				this.ok(res, result, result.length);
 				this.loggerService.log('[PostsController]: posts sent');
 			}
 		}
