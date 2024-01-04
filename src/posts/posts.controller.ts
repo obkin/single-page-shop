@@ -63,6 +63,8 @@ export class PostsController extends BaseController implements IPostsController 
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
+		const totalCount = await this.postsService.getAllPosts();
+
 		if (req.query.limit) {
 			const result = await this.postsService.getAllPosts(
 				Number(req.query.limit),
@@ -72,7 +74,7 @@ export class PostsController extends BaseController implements IPostsController 
 				this.notFound(res, 'ERROR: posts not found');
 				this.loggerService.error('[PostsController]: failed to get posts');
 			} else {
-				this.ok(res, result, result.length);
+				this.ok(res, result, totalCount.length);
 				this.loggerService.log('[PostsController]: posts sent');
 			}
 		} else {
@@ -81,7 +83,7 @@ export class PostsController extends BaseController implements IPostsController 
 				this.notFound(res, 'ERROR: posts not found');
 				this.loggerService.error('[PostsController]: failed to get posts');
 			} else {
-				this.ok(res, result, result.length);
+				this.ok(res, result, totalCount.length);
 				this.loggerService.log('[PostsController]: posts sent');
 			}
 		}
