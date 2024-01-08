@@ -6,6 +6,7 @@ import { ILogger } from './logger/logger.interface';
 import { PrismaService } from './database/prisma.service';
 import { PostsController } from './posts/posts.controller';
 import cors from 'cors';
+import { IExceptionFilter } from './exceptions/exception.filter.interface';
 
 @injectable()
 export class App {
@@ -15,6 +16,7 @@ export class App {
 
 	constructor(
 		@inject(TYPES.ILogger) private loggerService: ILogger,
+		@inject(TYPES.ExceptionFilter) private exceptionFilter: IExceptionFilter,
 		@inject(TYPES.PrismaService) private prismaService: PrismaService,
 		@inject(TYPES.PostsController) private postsController: PostsController,
 	) {
@@ -31,10 +33,16 @@ export class App {
 		this.app.use('/posts', this.postsController.router);
 	}
 
+	useExceptionFilters(): void {
+		this.app.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
+		this.loggerService.log(`[App]: ExceptionFilter launched`);
+	}
+
 	public async init(): Promise<void> {
 		try {
 			this.useMiddlewares();
 			this.useRoutes();
+			this.useExceptionFilters();
 			this.app.listen(this.port);
 			await this.prismaService.connect();
 			this.loggerService.log(`[App]: The server started at: http://localhost:${this.port}`);

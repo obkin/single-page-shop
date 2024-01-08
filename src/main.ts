@@ -13,6 +13,8 @@ import { IPostsService } from './posts/posts.service.interface';
 import { PostsService } from './posts/posts.service';
 import { IPostsController } from './posts/posts.controller.interface';
 import { PostsController } from './posts/posts.controller';
+import { IExceptionFilter } from './exceptions/exception.filter.interface';
+import { ExceptionFilter } from './exceptions/exception.filter';
 
 interface IBootstrapReturnType {
 	app: App;
@@ -22,6 +24,7 @@ interface IBootstrapReturnType {
 // Dependency Injection Tree (creating Inversify container and container module):
 const appBindings = new ContainerModule((bind: interfaces.Bind) => {
 	bind<ILogger>(TYPES.ILogger).to(LoggerService).inSingletonScope();
+	bind<IExceptionFilter>(TYPES.ExceptionFilter).to(ExceptionFilter).inSingletonScope();
 	bind<IConfigService>(TYPES.ConfigService).to(ConfigService).inSingletonScope();
 	bind<PrismaService>(TYPES.PrismaService).to(PrismaService).inSingletonScope();
 	bind<IPostsRepository>(TYPES.PostsRepoitory).to(PostsRepository).inSingletonScope();

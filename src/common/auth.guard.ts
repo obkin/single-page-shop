@@ -1,4 +1,4 @@
-import { HTTPError } from '../errors/http-error.class';
+import { HTTPError } from '../exceptions/http-error.class';
 import { IMiddleware } from './middleware.interface';
 import { Request, Response, NextFunction } from 'express';
 
