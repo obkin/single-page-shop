@@ -53,7 +53,14 @@ export class PostsController extends BaseController implements IPostsController 
 		if (!result) {
 			next(new HTTPError(400, 'failed to create post', 'PostsController -> addPost'));
 		} else {
-			this.created(res, `CREATED: { title: ${result.title}, body: ${result.body} }`);
+			this.created(res, {
+				newPost: {
+					id: result.id,
+					title: result.title,
+					body: result.body,
+					createdAt: result.createdAt,
+				},
+			});
 			this.loggerService.log('[PostsController]: new post created');
 		}
 	}

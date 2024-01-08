@@ -4,14 +4,10 @@ import { TYPES } from '../types';
 import { PrismaService } from '../database/prisma.service';
 import { PostModel } from '@prisma/client';
 import { Post } from './post.entity';
-import { ILogger } from '../logger/logger.interface';
 
 @injectable()
 export class PostsRepository implements IPostsRepository {
-	constructor(
-		@inject(TYPES.PrismaService) private prismaService: PrismaService,
-		@inject(TYPES.ILogger) private loggerService: ILogger,
-	) {}
+	constructor(@inject(TYPES.PrismaService) private prismaService: PrismaService) {}
 
 	async create({ title, body }: Post): Promise<PostModel> {
 		return await this.prismaService.client.postModel.create({
