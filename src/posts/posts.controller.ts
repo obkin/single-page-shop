@@ -6,6 +6,7 @@ import { TYPES } from '../types';
 import { ILogger } from '../logger/logger.interface';
 import { IPostsService } from './posts.service.interface';
 import { PostCreateDto } from './dto/post-create-dto';
+import { HTTPError } from '../exceptions/http-error.class';
 
 @injectable()
 export class PostsController extends BaseController implements IPostsController {
@@ -50,8 +51,7 @@ export class PostsController extends BaseController implements IPostsController 
 	): Promise<void> {
 		const result = await this.postsService.createPost(req.body);
 		if (!result) {
-			this.badRequest(res, 'ERROR: the post has not been created');
-			this.loggerService.error('[PostsController]: failed to create post');
+			next(new HTTPError(400, 'failed to create post', 'PostsController -> addPost'));
 		} else {
 			this.created(res, `CREATED: { title: ${result.title}, body: ${result.body} }`);
 			this.loggerService.log('[PostsController]: new post created');
@@ -71,8 +71,7 @@ export class PostsController extends BaseController implements IPostsController 
 				Number(req.query.page),
 			);
 			if (!result) {
-				this.notFound(res, 'ERROR: posts not found');
-				this.loggerService.error('[PostsController]: failed to get posts');
+				next(new HTTPError(404, 'posts not found', 'PostsController -> getPosts [limit]'));
 			} else {
 				this.ok(res, result, totalCount.length);
 				this.loggerService.log('[PostsController]: posts sent');
@@ -80,8 +79,7 @@ export class PostsController extends BaseController implements IPostsController 
 		} else {
 			const result = await this.postsService.getAllPosts();
 			if (!result) {
-				this.notFound(res, 'ERROR: posts not found');
-				this.loggerService.error('[PostsController]: failed to get posts');
+				next(new HTTPError(404, 'posts not found', 'PostsController -> getPosts'));
 			} else {
 				this.ok(res, result, totalCount.length);
 				this.loggerService.log('[PostsController]: posts sent');
@@ -92,8 +90,7 @@ export class PostsController extends BaseController implements IPostsController 
 	async removePost(req: Request, res: Response, next: NextFunction): Promise<void> {
 		const result = await this.postsService.removePost(Number(req.params.id));
 		if (!result) {
-			this.notFound(res, 'ERROR: post not found');
-			this.loggerService.error('[PostsController]: failed to delete post');
+			next(new HTTPError(404, 'post was not found', 'PostsController -> removePost'));
 		} else {
 			this.deleted(res, `SUCCESS: Post #${req.params.id} was deleted`);
 			this.loggerService.log(`[PostsController]: post #${req.params.id} was deleted`);
@@ -103,8 +100,7 @@ export class PostsController extends BaseController implements IPostsController 
 	async updatePost(req: Request, res: Response, next: NextFunction): Promise<void> {
 		const result = await this.postsService.updatePost(Number(req.params.id), req.body);
 		if (!result) {
-			this.notFound(res, 'ERROR: post not found');
-			this.loggerService.error('[PostsController]: failed to update post');
+			next(new HTTPError(404, 'post was not found', 'PostsController -> updatePost'));
 		} else {
 			this.ok(res, `SUCCESS: Post #${req.params.id} was updated`);
 			this.loggerService.log(`[PostsController]: post #${req.params.id} was updated`);

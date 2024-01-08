@@ -43,8 +43,8 @@ export class App {
 			this.useMiddlewares();
 			this.useRoutes();
 			this.useExceptionFilters();
-			this.app.listen(this.port);
 			await this.prismaService.connect();
+			this.app.listen(this.port);
 			this.loggerService.log(`[App]: The server started at: http://localhost:${this.port}`);
 		} catch (e) {
 			if (e instanceof Error) {
