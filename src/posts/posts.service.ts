@@ -64,7 +64,7 @@ export class PostsService implements IPostsService {
 			return await this.postsRepository.remove(postId);
 		} catch (e) {
 			if (e instanceof Error) {
-				this.loggerService.error(`[PostsService]: post #${postId} not found`);
+				this.loggerService.error(`[PostsService]: ${e.message}`);
 			}
 		}
 	}
@@ -76,11 +76,17 @@ export class PostsService implements IPostsService {
 			if (!currentPost) {
 				this.loggerService.error(`[PostsService]: post #${postId} not found`);
 			} else {
-				const updateForPost = {
-					title: updatedData.title ? updatedData.title : currentPost.title,
-					body: updatedData.body ? updatedData.body : currentPost.body,
-				};
-				return await this.postsRepository.update(postId, updateForPost as Post);
+				try {
+					const updateForPost = {
+						title: updatedData.title ? updatedData.title : currentPost.title,
+						body: updatedData.body ? updatedData.body : currentPost.body,
+					};
+					return await this.postsRepository.update(postId, updateForPost as Post);
+				} catch (e) {
+					if (e instanceof Error) {
+						this.loggerService.error(`[PostsService]: ${e.message}`);
+					}
+				}
 			}
 		} catch (e) {
 			if (e instanceof Error) {

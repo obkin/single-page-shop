@@ -4,52 +4,87 @@ import { TYPES } from '../types';
 import { PrismaService } from '../database/prisma.service';
 import { PostModel } from '@prisma/client';
 import { Post } from './post.entity';
+import { ILogger } from '../logger/logger.interface';
 
 @injectable()
 export class PostsRepository implements IPostsRepository {
-	constructor(@inject(TYPES.PrismaService) private prismaService: PrismaService) {}
+	constructor(
+		@inject(TYPES.PrismaService) private prismaService: PrismaService,
+		@inject(TYPES.ILogger) private loggerService: ILogger,
+	) {}
 
-	async create({ title, body }: Post): Promise<PostModel> {
-		return await this.prismaService.client.postModel.create({
-			data: {
-				title,
-				body,
-			},
-		});
+	async create({ title, body }: Post): Promise<PostModel | void> {
+		try {
+			return await this.prismaService.client.postModel.create({
+				data: {
+					title,
+					body,
+				},
+			});
+		} catch (e) {
+			if (e instanceof Error) {
+				throw new Error(e.message);
+			}
+		}
 	}
 
 	async findOne(postId: number): Promise<PostModel | null> {
-		return await this.prismaService.client.postModel.findFirst({
-			where: {
-				id: postId,
-			},
-		});
+		try {
+			return await this.prismaService.client.postModel.findFirst({
+				where: {
+					id: postId,
+				},
+			});
+		} catch (e) {
+			if (e instanceof Error) {
+				throw new Error(e.message);
+			}
+			return null;
+		}
 	}
 
 	async findMany(limit?: number, pages?: number): Promise<any> {
-		return await this.prismaService.client.postModel.findMany({
-			take: limit || 100,
-			skip: pages,
-		});
+		try {
+			return await this.prismaService.client.postModel.findMany({
+				take: limit || 100,
+				skip: pages,
+			});
+		} catch (e) {
+			if (e instanceof Error) {
+				throw new Error(e.message);
+			}
+		}
 	}
 
 	async remove(postId: number): Promise<any> {
-		return await this.prismaService.client.postModel.delete({
-			where: {
-				id: postId,
-			},
-		});
+		try {
+			return await this.prismaService.client.postModel.delete({
+				where: {
+					id: postId,
+				},
+			});
+		} catch (e) {
+			if (e instanceof Error) {
+				throw new Error(e.message);
+			}
+		}
 	}
 
-	async update(postId: number, { title, body }: Post): Promise<PostModel> {
-		return await this.prismaService.client.postModel.update({
-			where: {
-				id: postId,
-			},
-			data: {
-				title,
-				body,
-			},
-		});
+	async update(postId: number, { title, body }: Post): Promise<PostModel | void> {
+		try {
+			return await this.prismaService.client.postModel.update({
+				where: {
+					id: postId,
+				},
+				data: {
+					title,
+					body,
+				},
+			});
+		} catch (e) {
+			if (e instanceof Error) {
+				throw new Error(e.message);
+			}
+		}
 	}
 }
