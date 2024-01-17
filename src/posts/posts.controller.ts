@@ -24,6 +24,12 @@ export class PostsController extends BaseController implements IPostsController 
 				middlewares: [],
 			},
 			{
+				path: '/get-post/:id',
+				method: 'get',
+				func: this.getPost,
+				middlewares: [],
+			},
+			{
 				path: '/get-posts',
 				method: 'get',
 				func: this.getPosts,
@@ -65,6 +71,16 @@ export class PostsController extends BaseController implements IPostsController 
 		}
 	}
 
+	async getPost(req: Request, res: Response, next: NextFunction): Promise<void> {
+		const result = await this.postsService.getOnePost(Number(req.params.id));
+		if (!result) {
+			next(new HTTPError(404, `post #${req.params.id} not found`, 'PostsController -> getPost'));
+		} else {
+			this.ok(res, result);
+			this.loggerService.log('[PostsController]: post sent');
+		}
+	}
+
 	async getPosts(
 		req: Request<{}, {}, PostCreateDto, { limit?: string; page?: string }>,
 		res: Response,
@@ -97,7 +113,7 @@ export class PostsController extends BaseController implements IPostsController 
 	async removePost(req: Request, res: Response, next: NextFunction): Promise<void> {
 		const result = await this.postsService.removePost(Number(req.params.id));
 		if (!result) {
-			next(new HTTPError(404, 'post was not found', 'PostsController -> removePost'));
+			next(new HTTPError(404, `post #${req.params.id} not found`, 'PostsController -> removePost'));
 		} else {
 			this.deleted(res, `SUCCESS: Post #${req.params.id} was deleted`);
 			this.loggerService.log(`[PostsController]: post #${req.params.id} was deleted`);
@@ -107,7 +123,7 @@ export class PostsController extends BaseController implements IPostsController 
 	async updatePost(req: Request, res: Response, next: NextFunction): Promise<void> {
 		const result = await this.postsService.updatePost(Number(req.params.id), req.body);
 		if (!result) {
-			next(new HTTPError(404, 'post was not found', 'PostsController -> updatePost'));
+			next(new HTTPError(404, `post #${req.params.id} not found`, 'PostsController -> updatePost'));
 		} else {
 			this.ok(res, `SUCCESS: Post #${req.params.id} was updated`);
 			this.loggerService.log(`[PostsController]: post #${req.params.id} was updated`);

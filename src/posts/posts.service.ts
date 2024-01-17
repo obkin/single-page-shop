@@ -25,6 +25,17 @@ export class PostsService implements IPostsService {
 		}
 	}
 
+	async getOnePost(postId: number): Promise<PostModel | null> {
+		try {
+			return await this.postsRepository.findOne(postId);
+		} catch (e) {
+			if (e instanceof Error) {
+				this.loggerService.error(`[PostsService]: ${e.message}`);
+			}
+			return null;
+		}
+	}
+
 	async getAllPosts(limit?: number, page?: number): Promise<any | void> {
 		if (limit) {
 			if (page) {
@@ -74,7 +85,7 @@ export class PostsService implements IPostsService {
 			const currentPost = await this.postsRepository.findOne(postId);
 
 			if (!currentPost) {
-				this.loggerService.error(`[PostsService]: post #${postId} not found`);
+				// this.loggerService.error(`[PostsService]: post #${postId} not found`);
 			} else {
 				try {
 					const updateForPost = {
