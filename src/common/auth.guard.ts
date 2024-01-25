@@ -3,8 +3,8 @@ import { IMiddleware } from './middleware.interface';
 import { Request, Response, NextFunction } from 'express';
 
 class AuthGuardMiddleware implements IMiddleware {
-	exec({ user }: Request, res: Response, next: NextFunction): void {
-		if (user) {
+	exec({ body }: Request, res: Response, next: NextFunction): void {
+		if (body) {
 			next();
 		} else {
 			next(new HTTPError(401, 'user is not authorized', 'login'));
