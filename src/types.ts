@@ -4,7 +4,12 @@ export const TYPES = {
 	ExceptionFilter: Symbol.for('ExceptionFilter'),
 	ConfigService: Symbol.for('ConfigService'),
 	PrismaService: Symbol.for('PrismaService'),
+
 	PostsRepoitory: Symbol.for('PostsRepoitory'),
 	PostsService: Symbol.for('PostsService'),
 	PostsController: Symbol.for('PostsController'),
+
+	UsersRepository: Symbol.for('UsersRepository'),
+	UserService: Symbol.for('UserService'),
+	UserController: Symbol.for('UserController'),
 };
