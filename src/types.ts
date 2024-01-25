@@ -10,6 +10,6 @@ export const TYPES = {
 	PostsController: Symbol.for('PostsController'),
 
 	UsersRepository: Symbol.for('UsersRepository'),
-	UserService: Symbol.for('UserService'),
-	UserController: Symbol.for('UserController'),
+	UsersService: Symbol.for('UsersService'),
+	UsersController: Symbol.for('UsersController'),
 };

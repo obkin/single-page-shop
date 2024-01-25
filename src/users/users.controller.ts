@@ -3,22 +3,22 @@ import { BaseController } from '../common/base.controller';
 import { HTTPError } from '../exceptions/http-error.class';
 import { ILogger } from '../logger/logger.interface';
 import { inject, injectable } from 'inversify';
-import { IUserController } from './users.controller.interface';
+import { IUsersController } from './users.controller.interface';
 import { TYPES } from '../types';
 import { UserLoginDto } from './dto/user-login.dto';
 import { UserRegisterDto } from './dto/user-register.dto';
 import { ValidateMiddleware } from '../common/validate.middleware';
 import { sign } from 'jsonwebtoken';
-import { IUserService } from './users.service.interface';
+import { IUsersService } from './users.service.interface';
 import { IConfigService } from '../config/config.service.interface';
 import { AuthGuardMiddleware } from '../common/auth.guard';
 import 'reflect-metadata';
 
 @injectable()
-class UserController extends BaseController implements IUserController {
+export class UsersController extends BaseController implements IUsersController {
 	constructor(
 		@inject(TYPES.ILogger) private loggerService: ILogger,
-		@inject(TYPES.UserService) private userService: IUserService,
+		@inject(TYPES.UsersService) private userService: IUsersService,
 		@inject(TYPES.ConfigService) private configService: IConfigService,
 	) {
 		super(loggerService);
@@ -36,12 +36,12 @@ class UserController extends BaseController implements IUserController {
 				func: this.login,
 				middlewares: [new ValidateMiddleware(UserLoginDto)],
 			},
-			// {
-			// 	path: '/info',
-			// 	method: 'get',
-			// 	func: this.info,
-			// 	middlewares: [new AuthGuardMiddleware()],
-			// },
+			{
+				path: '/info',
+				method: 'get',
+				func: this.info,
+				middlewares: [new AuthGuardMiddleware()],
+			},
 		]);
 	}
 
@@ -72,14 +72,14 @@ class UserController extends BaseController implements IUserController {
 		}
 	}
 
-	// async info({ user }: Request, res: Response, next: NextFunction): Promise<void> {
-	// 	if (user) {
-	// 		const userInfo = await this.userService.findUser(user);
-	// 		this.ok(res, { email: userInfo?.email, id: userInfo?.id });
-	// 	} else {
-	// 		return next(new HTTPError(401, 'such user is not exists', 'info'));
-	// 	}
-	// }
+	async info(req: Request, res: Response, next: NextFunction): Promise<void> {
+		if (req.body.email) {
+			const userInfo = await this.userService.findUser(req.body.email);
+			this.ok(res, { email: userInfo?.email, id: userInfo?.id });
+		} else {
+			return next(new HTTPError(401, 'such user is not exists', 'info'));
+		}
+	}
 
 	private signJWT(email: string, secret: string): Promise<string> {
 		return new Promise((resolve, reject) => {
@@ -103,5 +103,3 @@ class UserController extends BaseController implements IUserController {
 		});
 	}
 }
-
-export { UserController };

@@ -7,6 +7,9 @@ import { PrismaService } from './database/prisma.service';
 import { PostsController } from './posts/posts.controller';
 import cors from 'cors';
 import { IExceptionFilter } from './exceptions/exception.filter.interface';
+import { UsersController } from './users/users.controller';
+import { AuthMiddleware } from './common/auth.middleware';
+import { IConfigService } from './config/config.service.interface';
 
 @injectable()
 export class App {
@@ -17,7 +20,9 @@ export class App {
 	constructor(
 		@inject(TYPES.ILogger) private loggerService: ILogger,
 		@inject(TYPES.ExceptionFilter) private exceptionFilter: IExceptionFilter,
+		@inject(TYPES.ConfigService) private configService: IConfigService,
 		@inject(TYPES.PrismaService) private prismaService: PrismaService,
+		@inject(TYPES.UsersController) private usersController: UsersController,
 		@inject(TYPES.PostsController) private postsController: PostsController,
 	) {
 		this.app = express();
@@ -27,9 +32,12 @@ export class App {
 	useMiddlewares(): void {
 		this.app.use(json());
 		this.app.use(cors());
+		const authMiddleware = new AuthMiddleware(this.configService.get('SECRET'));
+		this.app.use(authMiddleware.exec.bind(authMiddleware));
 	}
 
 	useRoutes(): void {
+		this.app.use('/users', this.usersController.router);
 		this.app.use('/posts', this.postsController.router);
 	}
 
