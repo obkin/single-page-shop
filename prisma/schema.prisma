@@ -10,9 +10,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model UserModel {
+  id        Int            @id @default(autoincrement())
+  userName  String
+  email     String
+  password  String
+  createdAt DateTime       @default(now())
+  posts     PostModel[]
+  comments  CommentModel[]
+}
+
 model PostModel {
-  id          Int        @id @default(autoincrement())
-  title       String
-  body        String
-  createdAt   DateTime   @default(now())
+  id        Int            @id @default(autoincrement())
+  title     String
+  body      String
+  createdAt DateTime       @default(now())
+  userId    Int?
+  user      UserModel?     @relation(fields: [userId], references: [id])
+  comments  CommentModel[]
+}
+
+model CommentModel {
+  id        Int       @id @default(autoincrement())
+  content   String
+  createdAt DateTime  @default(now())
+  postId    Int
+  post      PostModel @relation(fields: [postId], references: [id])
+  userId    Int
+  user      UserModel @relation(fields: [userId], references: [id])
 }
