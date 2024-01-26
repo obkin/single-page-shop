@@ -9,22 +9,34 @@ import { User } from './user.entity';
 class UsersRepository implements IUsersRepository {
 	constructor(@inject(TYPES.PrismaService) private prismaService: PrismaService) {}
 
-	async create({ email, password, name }: User): Promise<UserModel> {
-		return await this.prismaService.client.userModel.create({
-			data: {
-				email,
-				password,
-				userName: name,
-			},
-		});
+	async create({ email, password, name }: User): Promise<UserModel | void> {
+		try {
+			return await this.prismaService.client.userModel.create({
+				data: {
+					email,
+					password,
+					userName: name,
+				},
+			});
+		} catch (e) {
+			if (e instanceof Error) {
+				throw new Error(e.message);
+			}
+		}
 	}
 
-	async find(email: string): Promise<UserModel | null> {
-		return this.prismaService.client.userModel.findFirst({
-			where: {
-				email,
-			},
-		});
+	async find(email: string): Promise<UserModel | null | void> {
+		try {
+			return this.prismaService.client.userModel.findFirst({
+				where: {
+					email,
+				},
+			});
+		} catch (e) {
+			if (e instanceof Error) {
+				throw new Error(e.message);
+			}
+		}
 	}
 }
 

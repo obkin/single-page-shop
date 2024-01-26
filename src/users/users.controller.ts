@@ -78,10 +78,10 @@ export class UsersController extends BaseController implements IUsersController 
 	}
 
 	async info(req: Request, res: Response, next: NextFunction): Promise<void> {
-		if (!req.body.email) {
+		const userInfo = await this.userService.findUser(req.body.email);
+		if (!userInfo) {
 			return next(new HTTPError(401, 'such user does not exist', 'UsersController -> info'));
 		} else {
-			const userInfo = await this.userService.findUser(req.body.email);
 			this.ok(res, { email: userInfo?.email, id: userInfo?.id });
 			this.loggerService.log(`[UsersController]: info about user ( ${req.body.email} ) sent`);
 		}

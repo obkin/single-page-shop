@@ -3,9 +3,9 @@ import { UserLoginDto } from './dto/user-login.dto';
 import { UserRegisterDto } from './dto/user-register.dto';
 
 interface IUsersService {
-	createUser(dto: UserRegisterDto): Promise<UserModel | null>;
+	createUser(dto: UserRegisterDto): Promise<UserModel | null | void>;
 	validateUser(dto: UserLoginDto): Promise<boolean>;
-	findUser(email: string): Promise<UserModel | null>;
+	findUser(email: string): Promise<UserModel | null | void>;
 }
 
 export { IUsersService };
