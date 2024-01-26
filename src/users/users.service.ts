@@ -34,7 +34,7 @@ export class UsersService implements IUsersService {
 		}
 	}
 
-	async validateUser({ email, password }: UserLoginDto): Promise<boolean> {
+	async validateUser({ email, password }: UserLoginDto): Promise<boolean | void> {
 		try {
 			const existUser = await this.usersRepository.find(email);
 			if (existUser) {
@@ -47,7 +47,6 @@ export class UsersService implements IUsersService {
 			if (e instanceof Error) {
 				this.loggerService.error(`[PostsService]: ${e.message}`);
 			}
-			return false; // need to fix
 		}
 	}
 

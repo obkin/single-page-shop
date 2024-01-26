@@ -4,7 +4,7 @@ import { UserRegisterDto } from './dto/user-register.dto';
 
 interface IUsersService {
 	createUser(dto: UserRegisterDto): Promise<UserModel | null | void>;
-	validateUser(dto: UserLoginDto): Promise<boolean>;
+	validateUser(dto: UserLoginDto): Promise<boolean | void>;
 	findUser(email: string): Promise<UserModel | null | void>;
 }
 
