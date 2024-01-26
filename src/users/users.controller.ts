@@ -55,9 +55,10 @@ export class UsersController extends BaseController implements IUsersController 
 	): Promise<void> {
 		const result = await this.userService.createUser(req.body);
 		if (!result) {
-			return next(new HTTPError(422, 'such user already exists', 'register'));
+			return next(new HTTPError(422, 'such user already exists', 'UsersController -> register'));
 		} else {
-			this.ok(res, { email: result.email, id: result.id });
+			this.ok(res, { status: 'registered', email: result.email, id: result.id });
+			this.loggerService.log(`[UsersController]: new user ( ${result.email} ) registered`);
 		}
 	}
 
@@ -68,19 +69,21 @@ export class UsersController extends BaseController implements IUsersController 
 	): Promise<void> {
 		const result = await this.userService.validateUser(req.body);
 		if (!result) {
-			return next(new HTTPError(401, 'authorize error', 'login'));
+			return next(new HTTPError(401, 'authorize error', 'UsersController -> login'));
 		} else {
 			const jwt = await this.signJWT(req.body.email, this.configService.get('SECRET'));
-			this.ok(res, { jwt });
+			this.ok(res, { jwt: jwt });
+			this.loggerService.log(`[UsersController]: user ( ${req.body.email} ) signed in`);
 		}
 	}
 
 	async info(req: Request, res: Response, next: NextFunction): Promise<void> {
-		if (req.body.email) {
+		if (!req.body.email) {
+			return next(new HTTPError(401, 'such user does not exist', 'UsersController -> info'));
+		} else {
 			const userInfo = await this.userService.findUser(req.body.email);
 			this.ok(res, { email: userInfo?.email, id: userInfo?.id });
-		} else {
-			return next(new HTTPError(401, 'such user is not exists', 'info'));
+			this.loggerService.log(`[UsersController]: info about user ( ${req.body.email} ) sent`);
 		}
 	}
 
