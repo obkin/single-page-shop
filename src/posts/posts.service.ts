@@ -81,19 +81,25 @@ export class PostsService implements IPostsService {
 	}
 
 	async updatePost(postId: number, updatedData: Post): Promise<PostModel | void> {
-		const currentPost = await this.postsRepository.findOne(postId);
+		try {
+			const currentPost = await this.postsRepository.findOne(postId);
 
-		if (currentPost) {
-			try {
-				const updateForPost = {
-					title: updatedData.title ? updatedData.title : currentPost.title,
-					body: updatedData.body ? updatedData.body : currentPost.body,
-				};
-				return await this.postsRepository.update(postId, updateForPost as Post);
-			} catch (e) {
-				if (e instanceof Error) {
-					this.loggerService.error(`[PostsService]: ${e.message}`);
+			if (currentPost) {
+				try {
+					const updateForPost = {
+						title: updatedData.title ? updatedData.title : currentPost.title,
+						body: updatedData.body ? updatedData.body : currentPost.body,
+					};
+					return await this.postsRepository.update(postId, updateForPost as Post);
+				} catch (e) {
+					if (e instanceof Error) {
+						this.loggerService.error(`[PostsService]: ${e.message}`);
+					}
 				}
+			}
+		} catch (e) {
+			if (e instanceof Error) {
+				this.loggerService.error(`[PostsService]: ${e.message}`);
 			}
 		}
 	}
