@@ -54,7 +54,7 @@ export class UsersController extends BaseController implements IUsersController 
 		next: NextFunction,
 	): Promise<void> {
 		if (req.body.name === '' || req.body.email === '' || req.body.password === '') {
-			return next(new HTTPError(400, 'fill all the gaps', 'UsersController -> register'));
+			return next(new HTTPError(400, 'fill in all the gaps', 'UsersController -> register'));
 		}
 
 		const result = await this.userService.createUser(req.body);
@@ -72,12 +72,17 @@ export class UsersController extends BaseController implements IUsersController 
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
+		if (req.body.email === '' || req.body.password === '') {
+			return next(new HTTPError(400, 'fill in all the gaps', 'UsersController -> login'));
+		}
+
 		const result = await this.userService.validateUser(req.body);
+
 		if (!result) {
 			return next(new HTTPError(401, 'authorize error', 'UsersController -> login'));
 		} else {
 			const jwt = await this.signJWT(req.body.email, this.configService.get('SECRET'));
-			this.ok(res, { jwt: jwt });
+			this.ok(res, { jwt });
 			this.loggerService.log(`[UsersController]: user ( ${req.body.email} ) signed in`);
 		}
 	}
