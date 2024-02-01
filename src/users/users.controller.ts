@@ -79,7 +79,7 @@ export class UsersController extends BaseController implements IUsersController 
 		const result = await this.userService.validateUser(req.body);
 
 		if (!result) {
-			return next(new HTTPError(401, 'authorize error', 'UsersController -> login'));
+			return next(new HTTPError(401, 'wrong email or password', 'UsersController -> login'));
 		} else {
 			const jwt = await this.signJWT(req.body.email, this.configService.get('SECRET'));
 			this.ok(res, { jwt });
@@ -89,10 +89,17 @@ export class UsersController extends BaseController implements IUsersController 
 
 	async info(req: Request, res: Response, next: NextFunction): Promise<void> {
 		const userInfo = await this.userService.findUser(req.body.email);
+
 		if (!userInfo) {
 			return next(new HTTPError(401, 'such user does not exist', 'UsersController -> info'));
 		} else {
-			this.ok(res, { email: userInfo?.email, id: userInfo?.id });
+			const userData = {
+				name: userInfo?.userName,
+				email: userInfo?.email,
+				iat: userInfo?.createdAt,
+				id: userInfo?.id,
+			};
+			this.ok(res, userData);
 			this.loggerService.log(`[UsersController]: info about user ( ${req.body.email} ) sent`);
 		}
 	}
