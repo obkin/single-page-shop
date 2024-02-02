@@ -79,7 +79,9 @@ export class UsersController extends BaseController implements IUsersController 
 		const result = await this.userService.validateUser(req.body);
 
 		if (!result) {
-			return next(new HTTPError(401, 'wrong email or password', 'UsersController -> login'));
+			return next(
+				new HTTPError(401, `( ${req.body.email} ) wrong credentials`, 'UsersController -> login'),
+			);
 		} else {
 			const jwt = await this.signJWT(req.body.email, this.configService.get('SECRET'));
 			this.ok(res, { jwt });
