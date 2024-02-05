@@ -13,12 +13,13 @@ export class PostsRepository implements IPostsRepository {
 		@inject(TYPES.ILogger) private loggerService: ILogger,
 	) {}
 
-	async create({ title, body }: Post): Promise<PostModel | void> {
+	async create({ title, body, userId }: Post): Promise<PostModel | void> {
 		try {
 			return await this.prismaService.client.postModel.create({
 				data: {
 					title,
 					body,
+					userId,
 				},
 			});
 		} catch (e) {
