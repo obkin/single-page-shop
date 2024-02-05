@@ -2,6 +2,7 @@ class Post {
 	constructor(
 		private readonly _title: string,
 		private readonly _body: string,
+		private readonly _userId: number,
 	) {}
 
 	get title(): string {
@@ -10,6 +11,10 @@ class Post {
 
 	get body(): string {
 		return this._body;
+	}
+
+	get userId(): number {
+		return this._userId;
 	}
 }
 

@@ -7,6 +7,7 @@ import { ILogger } from '../logger/logger.interface';
 import { IPostsService } from './posts.service.interface';
 import { PostCreateDto } from './dto/post-create-dto';
 import { HTTPError } from '../exceptions/http-error.class';
+import { ValidateMiddleware } from '../common/validate.middleware';
 
 @injectable()
 export class PostsController extends BaseController implements IPostsController {
@@ -22,7 +23,7 @@ export class PostsController extends BaseController implements IPostsController 
 				path: '/add-post',
 				method: 'post',
 				func: this.addPost,
-				middlewares: [],
+				middlewares: [new ValidateMiddleware(PostCreateDto)],
 			},
 			{
 				main: '/posts',
