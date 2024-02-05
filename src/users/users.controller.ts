@@ -53,16 +53,12 @@ export class UsersController extends BaseController implements IUsersController 
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		if (req.body.name === '' || req.body.email === '' || req.body.password === '') {
-			return next(new HTTPError(400, 'fill in all the gaps', 'UsersController -> register'));
-		}
-
 		const result = await this.userService.createUser(req.body);
 
 		if (!result) {
 			return next(new HTTPError(422, 'such user already exists', 'UsersController -> register'));
 		} else {
-			this.ok(res, { status: 'registered', email: result.email, id: result.id });
+			this.created(res, { status: 'registered', email: result.email, id: result.id });
 			this.loggerService.log(`[UsersController]: new user ( ${result.email} ) registered`);
 		}
 	}
