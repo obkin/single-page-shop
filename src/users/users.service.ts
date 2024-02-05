@@ -53,7 +53,9 @@ export class UsersService implements IUsersService {
 
 	async findUser(email: string): Promise<UserModel | null | void> {
 		try {
-			return await this.usersRepository.find(email);
+			if (email) {
+				return await this.usersRepository.find(email);
+			}
 		} catch (e) {
 			if (e instanceof Error) {
 				this.loggerService.error(`[PostsService]: ${e.message}`);

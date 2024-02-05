@@ -82,17 +82,16 @@ export class UsersController extends BaseController implements IUsersController 
 	}
 
 	async info({ user }: Request, res: Response, next: NextFunction): Promise<void> {
-		console.log(user);
 		const userInfo = await this.userService.findUser(user);
 
 		if (!userInfo) {
-			return next(new HTTPError(401, 'such user does not exist', 'UsersController -> info'));
+			return next(new HTTPError(401, 'user is unauthorized', 'UsersController -> info'));
 		} else {
 			const userData = {
-				name: userInfo?.userName,
-				email: userInfo?.email,
-				iat: userInfo?.createdAt,
-				id: userInfo?.id,
+				id: userInfo.id,
+				name: userInfo.userName,
+				email: userInfo.email,
+				iat: userInfo.createdAt,
 			};
 			this.ok(res, userData);
 			this.loggerService.log(`[UsersController]: info about user ( ${userInfo.email} ) sent`);
