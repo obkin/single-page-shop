@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsEmail } from 'class-validator';
+import { IsNotEmpty, IsEmail, Length } from 'class-validator';
 
 export class UserRegisterDto {
 	@IsNotEmpty({ message: 'Name must not be empty' })
@@ -9,5 +9,6 @@ export class UserRegisterDto {
 	email: string;
 
 	@IsNotEmpty({ message: 'Password must not be empty' })
+	@Length(8, 80, { message: 'Password must be between 8 and 80 characters' })
 	password: string;
 }

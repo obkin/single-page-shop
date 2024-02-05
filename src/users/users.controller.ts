@@ -68,10 +68,6 @@ export class UsersController extends BaseController implements IUsersController 
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		if (req.body.email === '' || req.body.password === '') {
-			return next(new HTTPError(400, 'fill in all the gaps', 'UsersController -> login'));
-		}
-
 		const result = await this.userService.validateUser(req.body);
 
 		if (!result) {
