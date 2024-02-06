@@ -36,7 +36,7 @@ export class PostsService implements IPostsService {
 		}
 	}
 
-	async getAllPosts(limit?: number, page?: number): Promise<any | void> {
+	async getAllPosts(userId?: number, limit?: number, page?: number): Promise<any | void> {
 		if (limit) {
 			if (page) {
 				const pageSize = limit;
@@ -44,7 +44,11 @@ export class PostsService implements IPostsService {
 				const skip = (pageNumber - 1) * pageSize;
 
 				try {
-					return await this.postsRepository.findMany(limit, skip);
+					if (userId) {
+						return await this.postsRepository.findMany(userId, limit, skip);
+					} else {
+						return await this.postsRepository.findMany(limit, skip);
+					}
 				} catch (e) {
 					if (e instanceof Error) {
 						this.loggerService.error(`[PostsService]: ${e.message}`);
@@ -63,6 +67,16 @@ export class PostsService implements IPostsService {
 
 		try {
 			return await this.postsRepository.findMany();
+		} catch (e) {
+			if (e instanceof Error) {
+				this.loggerService.error(`[PostsService]: ${e.message}`);
+			}
+		}
+	}
+
+	async getAllUserPosts(userId: number, limit?: number, page?: number): Promise<any | void> {
+		try {
+			// ...
 		} catch (e) {
 			if (e instanceof Error) {
 				this.loggerService.error(`[PostsService]: ${e.message}`);

@@ -8,6 +8,7 @@ import { IPostsService } from './posts.service.interface';
 import { PostCreateDto } from './dto/post-create-dto';
 import { HTTPError } from '../exceptions/http-error.class';
 import { ValidateMiddleware } from '../common/validate.middleware';
+import { AuthGuardMiddleware } from '../common/auth.guard';
 
 @injectable()
 export class PostsController extends BaseController implements IPostsController {
@@ -38,6 +39,13 @@ export class PostsController extends BaseController implements IPostsController 
 				method: 'get',
 				func: this.getPosts,
 				middlewares: [],
+			},
+			{
+				main: '/posts',
+				path: '/get-user-posts',
+				method: 'get',
+				func: this.getUserPosts,
+				middlewares: [new AuthGuardMiddleware()],
 			},
 			{
 				main: '/posts',
@@ -113,6 +121,29 @@ export class PostsController extends BaseController implements IPostsController 
 				this.ok(res, result, totalCount.length);
 				this.loggerService.log('[PostsController]: posts sent');
 			}
+		}
+	}
+
+	async getUserPosts(
+		req: Request<{}, {}, PostCreateDto, { limit?: string; page?: string }>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		if (req.userId) {
+			const result = await this.postsService.getAllPosts(
+				Number(req.userId),
+				Number(req.query.limit),
+				Number(req.query.page),
+			);
+
+			if (!result) {
+				next(new HTTPError(404, `posts not found`, 'PostsController -> getUserPosts'));
+			} else {
+				this.ok(res, result);
+				this.loggerService.log(`[PostsController]: posts sent to user`);
+			}
+		} else {
+			next(new HTTPError(401, 'user is not authorized', 'PostsController -> getUserPosts'));
 		}
 	}
 

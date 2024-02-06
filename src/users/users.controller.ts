@@ -75,17 +75,29 @@ export class UsersController extends BaseController implements IUsersController 
 				new HTTPError(401, `( ${req.body.email} ) wrong credentials`, 'UsersController -> login'),
 			);
 		} else {
-			const jwt = await this.signJWT(req.body.email, this.configService.get('SECRET'));
-			this.ok(res, { jwt });
-			this.loggerService.log(`[UsersController]: user ( ${req.body.email} ) signed in`);
+			const userData = await this.userService.findUser(req.body.email);
+
+			if (userData) {
+				const jwt = await this.signJWT(
+					userData.id,
+					userData.email,
+					this.configService.get('SECRET'),
+				);
+				this.ok(res, { jwt });
+				this.loggerService.log(`[UsersController]: user ( ${req.body.email} ) signed in`);
+			} else {
+				next(new HTTPError(404, `user ${req.body.email} not found`, 'UsersController -> login'));
+				// this.loggerService.error(`[UsersController]: user ( ${req.body.email} ) does not exist`);
+			}
 		}
 	}
 
-	async info({ user }: Request, res: Response, next: NextFunction): Promise<void> {
-		const userInfo = await this.userService.findUser(user);
+	async info({ userId, userEmail }: Request, res: Response, next: NextFunction): Promise<void> {
+		const userInfo = await this.userService.findUser(userEmail);
+		console.log(userId);
 
 		if (!userInfo) {
-			return next(new HTTPError(401, 'user is unauthorized', 'UsersController -> info'));
+			return next(new HTTPError(401, 'user is not authorized', 'UsersController -> info'));
 		} else {
 			const userData = {
 				id: userInfo.id,
@@ -98,10 +110,11 @@ export class UsersController extends BaseController implements IUsersController 
 		}
 	}
 
-	private signJWT(email: string, secret: string): Promise<string> {
+	private signJWT(id: number, email: string, secret: string): Promise<string> {
 		return new Promise((resolve, reject) => {
 			sign(
 				{
+					userId: id,
 					userEmail: email,
 					iat: Math.floor(Date.now() / 1000),
 				},

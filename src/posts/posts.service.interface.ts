@@ -5,7 +5,7 @@ import { Post } from './post.entity';
 interface IPostsService {
 	createPost(dto: PostCreateDto): Promise<PostModel | void>;
 	getOnePost(postId: number): Promise<PostModel | null>;
-	getAllPosts(limit?: number, page?: number): Promise<any | void>;
+	getAllPosts(userId?: number, limit?: number, page?: number): Promise<any | void>;
 	removePost(id: number): Promise<any | void>;
 	updatePost(postId: number, updatedData: Post): Promise<PostModel | void>;
 }

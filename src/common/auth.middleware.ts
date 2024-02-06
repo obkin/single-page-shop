@@ -12,7 +12,8 @@ class AuthMiddleware implements IMiddleware {
 					next();
 				} else if (payload) {
 					if (typeof payload == 'object') {
-						req.user = payload.userEmail;
+						req.userId = payload.userId;
+						req.userEmail = payload.userEmail;
 						next();
 					}
 				}
