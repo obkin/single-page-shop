@@ -40,9 +40,10 @@ export class PostsRepository implements IPostsRepository {
 		}
 	}
 
-	async findMany(userId?: number, limit?: number, pages?: number): Promise<any> {
-		try {
-			if (userId) {
+	async findMany(limit?: number, pages?: number, userId?: number): Promise<any> {
+		console.log(userId);
+		if (userId) {
+			try {
 				return await this.prismaService.client.postModel.findMany({
 					where: {
 						userId,
@@ -50,15 +51,21 @@ export class PostsRepository implements IPostsRepository {
 					take: limit || 100,
 					skip: pages,
 				});
-			} else {
+			} catch (e) {
+				if (e instanceof Error) {
+					throw new Error(e.message);
+				}
+			}
+		} else {
+			try {
 				return await this.prismaService.client.postModel.findMany({
 					take: limit || 100,
 					skip: pages,
 				});
-			}
-		} catch (e) {
-			if (e instanceof Error) {
-				throw new Error(e.message);
+			} catch (e) {
+				if (e instanceof Error) {
+					throw new Error(e.message);
+				}
 			}
 		}
 	}

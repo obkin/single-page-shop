@@ -107,8 +107,8 @@ export class PostsController extends BaseController implements IPostsController 
 				Number(req.query.limit),
 				Number(req.query.page),
 			);
-			if (!result) {
-				next(new HTTPError(404, 'posts not found', 'PostsController -> getPosts [limit]'));
+			if (!result || result.length === 0) {
+				next(new HTTPError(404, 'posts not found', 'PostsController -> getPosts with limit'));
 			} else {
 				this.ok(res, result, totalCount.length);
 				this.loggerService.log('[PostsController]: posts sent');
@@ -130,7 +130,7 @@ export class PostsController extends BaseController implements IPostsController 
 		next: NextFunction,
 	): Promise<void> {
 		if (req.userId) {
-			const result = await this.postsService.getAllPosts(
+			const result = await this.postsService.getAllUserPosts(
 				Number(req.userId),
 				Number(req.query.limit),
 				Number(req.query.page),
