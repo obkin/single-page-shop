@@ -41,7 +41,6 @@ export class PostsRepository implements IPostsRepository {
 	}
 
 	async findMany(limit?: number, pages?: number, userId?: number): Promise<any> {
-		console.log(userId);
 		if (userId) {
 			try {
 				return await this.prismaService.client.postModel.findMany({

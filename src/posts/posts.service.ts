@@ -87,7 +87,15 @@ export class PostsService implements IPostsService {
 			}
 
 			try {
-				return await this.postsRepository.findMany(limit);
+				return await this.postsRepository.findMany(limit, 0, userId);
+			} catch (e) {
+				if (e instanceof Error) {
+					this.loggerService.error(`[PostsService]: ${e.message}`);
+				}
+			}
+		} else {
+			try {
+				return await this.postsRepository.findMany(0, 0, userId);
 			} catch (e) {
 				if (e instanceof Error) {
 					this.loggerService.error(`[PostsService]: ${e.message}`);

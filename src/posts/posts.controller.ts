@@ -24,7 +24,7 @@ export class PostsController extends BaseController implements IPostsController 
 				path: '/add-post',
 				method: 'post',
 				func: this.addPost,
-				middlewares: [new ValidateMiddleware(PostCreateDto)],
+				middlewares: [new ValidateMiddleware(PostCreateDto)], // need auth?
 			},
 			{
 				main: '/posts',
@@ -52,14 +52,14 @@ export class PostsController extends BaseController implements IPostsController 
 				path: '/remove-post/:id',
 				method: 'delete',
 				func: this.removePost,
-				middlewares: [],
+				middlewares: [], // need auth?
 			},
 			{
 				main: '/posts',
 				path: '/update-post/:id',
 				method: 'put',
 				func: this.updatePost,
-				middlewares: [],
+				middlewares: [], // need auth?
 			},
 		]);
 	}
@@ -79,6 +79,8 @@ export class PostsController extends BaseController implements IPostsController 
 					title: result.title,
 					body: result.body,
 					createdAt: result.createdAt,
+					// updatedAt: result.updatedAt,
+					ownerId: result.userId,
 				},
 			});
 			this.loggerService.log('[PostsController]: new post created');
@@ -96,7 +98,7 @@ export class PostsController extends BaseController implements IPostsController 
 	}
 
 	async getPosts(
-		req: Request<{}, {}, PostCreateDto, { limit?: string; page?: string }>,
+		req: Request<{}, {}, {}, { limit?: string; page?: string }>,
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
@@ -107,6 +109,7 @@ export class PostsController extends BaseController implements IPostsController 
 				Number(req.query.limit),
 				Number(req.query.page),
 			);
+
 			if (!result || result.length === 0) {
 				next(new HTTPError(404, 'posts not found', 'PostsController -> getPosts with limit'));
 			} else {
@@ -115,7 +118,8 @@ export class PostsController extends BaseController implements IPostsController 
 			}
 		} else {
 			const result = await this.postsService.getAllPosts();
-			if (!result) {
+
+			if (!result || result.length === 0) {
 				next(new HTTPError(404, 'posts not found', 'PostsController -> getPosts'));
 			} else {
 				this.ok(res, result, totalCount.length);
@@ -125,7 +129,7 @@ export class PostsController extends BaseController implements IPostsController 
 	}
 
 	async getUserPosts(
-		req: Request<{}, {}, PostCreateDto, { limit?: string; page?: string }>,
+		req: Request<{}, {}, {}, { limit?: string; page?: string }>,
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
@@ -152,7 +156,7 @@ export class PostsController extends BaseController implements IPostsController 
 		if (!result) {
 			next(new HTTPError(404, `post #${req.params.id} not found`, 'PostsController -> removePost'));
 		} else {
-			this.deleted(res, `SUCCESS: Post #${req.params.id} was deleted`);
+			this.deleted(res, { message: `Post #${req.params.id} was deleted` });
 			this.loggerService.log(`[PostsController]: post #${req.params.id} was deleted`);
 		}
 	}
@@ -162,7 +166,7 @@ export class PostsController extends BaseController implements IPostsController 
 		if (!result) {
 			next(new HTTPError(404, `post #${req.params.id} not found`, 'PostsController -> updatePost'));
 		} else {
-			this.ok(res, `SUCCESS: Post #${req.params.id} was updated`);
+			this.ok(res, { message: `Post #${req.params.id} was updated` });
 			this.loggerService.log(`[PostsController]: post #${req.params.id} was updated`);
 		}
 	}

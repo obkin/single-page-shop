@@ -1,10 +1,12 @@
 import { IsString, IsInt, IsNotEmpty } from 'class-validator';
 
 export class PostCreateDto {
-	@IsString({ message: 'incorrect title' })
+	@IsString({ message: 'title must be a string' })
+	@IsNotEmpty({ message: 'title is required' })
 	title: string;
 
-	@IsString({ message: 'incorrect body' })
+	@IsString({ message: 'body must be a string' })
+	@IsNotEmpty({ message: 'body is required' })
 	body: string;
 
 	@IsInt({ message: 'userId must be an integer' })
