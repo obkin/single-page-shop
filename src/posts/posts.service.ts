@@ -15,7 +15,7 @@ export class PostsService implements IPostsService {
 	) {}
 
 	async createPost({ title, body, userId }: PostCreateDto): Promise<PostModel | void> {
-		const newPost = new Post(title, body, userId);
+		const newPost = new Post(title, body, Number(userId));
 		try {
 			return await this.postsRepository.create(newPost);
 		} catch (e) {

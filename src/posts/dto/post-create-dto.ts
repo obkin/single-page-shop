@@ -1,4 +1,4 @@
-import { IsString, IsInt, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty } from 'class-validator';
 
 export class PostCreateDto {
 	@IsString({ message: 'title must be a string' })
@@ -9,7 +9,7 @@ export class PostCreateDto {
 	@IsNotEmpty({ message: 'body is required' })
 	body: string;
 
-	@IsInt({ message: 'userId must be an integer' })
+	@IsString({ message: 'userId must be a string' })
 	@IsNotEmpty({ message: 'userId is required' })
-	userId: number;
+	userId: string;
 }

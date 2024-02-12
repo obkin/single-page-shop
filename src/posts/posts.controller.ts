@@ -24,7 +24,7 @@ export class PostsController extends BaseController implements IPostsController 
 				path: '/add-post',
 				method: 'post',
 				func: this.addPost,
-				middlewares: [new ValidateMiddleware(PostCreateDto)], // need auth?
+				middlewares: [new ValidateMiddleware(PostCreateDto)],
 			},
 			{
 				main: '/posts',
@@ -52,14 +52,14 @@ export class PostsController extends BaseController implements IPostsController 
 				path: '/remove-post/:id',
 				method: 'delete',
 				func: this.removePost,
-				middlewares: [], // need auth?
+				middlewares: [],
 			},
 			{
 				main: '/posts',
 				path: '/update-post/:id',
 				method: 'put',
 				func: this.updatePost,
-				middlewares: [], // need auth?
+				middlewares: [],
 			},
 		]);
 	}

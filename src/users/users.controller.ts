@@ -83,11 +83,10 @@ export class UsersController extends BaseController implements IUsersController 
 					userData.email,
 					this.configService.get('SECRET'),
 				);
-				this.ok(res, { jwt });
+				this.ok(res, { userId: userData.id, jwt });
 				this.loggerService.log(`[UsersController]: user ( ${req.body.email} ) signed in`);
 			} else {
 				next(new HTTPError(404, `user ${req.body.email} not found`, 'UsersController -> login'));
-				// this.loggerService.error(`[UsersController]: user ( ${req.body.email} ) does not exist`);
 			}
 		}
 	}
