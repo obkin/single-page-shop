@@ -133,6 +133,8 @@ export class PostsController extends BaseController implements IPostsController 
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
+		const totalCount = await this.postsService.getAllUserPosts(Number(req.userId));
+
 		if (req.userId) {
 			const result = await this.postsService.getAllUserPosts(
 				Number(req.userId),
@@ -143,7 +145,7 @@ export class PostsController extends BaseController implements IPostsController 
 			if (!result) {
 				next(new HTTPError(404, `posts not found`, 'PostsController -> getUserPosts'));
 			} else {
-				this.ok(res, result);
+				this.ok(res, result, totalCount.length);
 				this.loggerService.log(`[PostsController]: posts sent to user`);
 			}
 		} else {
