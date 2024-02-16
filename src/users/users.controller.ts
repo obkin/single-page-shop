@@ -93,7 +93,6 @@ export class UsersController extends BaseController implements IUsersController 
 
 	async info({ userId, userEmail }: Request, res: Response, next: NextFunction): Promise<void> {
 		const userInfo = await this.userService.findUser(userEmail);
-		console.log(userId);
 
 		if (!userInfo) {
 			return next(new HTTPError(401, 'user is not authorized', 'UsersController -> info'));
