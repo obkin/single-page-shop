@@ -45,6 +45,27 @@ export class UsersController extends BaseController implements IUsersController 
 				func: this.info,
 				middlewares: [new AuthGuardMiddleware()],
 			},
+			{
+				main: '/users',
+				path: '/change-name/:id',
+				method: 'put',
+				func: this.changeName,
+				middlewares: [new AuthGuardMiddleware()],
+			},
+			{
+				main: '/users',
+				path: '/change-email/:id',
+				method: 'put',
+				func: this.changeEmail,
+				middlewares: [new AuthGuardMiddleware()],
+			},
+			{
+				main: '/users',
+				path: '/change-pass/:id',
+				method: 'put',
+				func: this.changePassword,
+				middlewares: [new AuthGuardMiddleware()],
+			},
 		]);
 	}
 
@@ -91,7 +112,7 @@ export class UsersController extends BaseController implements IUsersController 
 		}
 	}
 
-	async info({ userId, userEmail }: Request, res: Response, next: NextFunction): Promise<void> {
+	async info({ userEmail }: Request, res: Response, next: NextFunction): Promise<void> {
 		const userInfo = await this.userService.findUser(userEmail);
 
 		if (!userInfo) {
@@ -107,6 +128,20 @@ export class UsersController extends BaseController implements IUsersController 
 			this.loggerService.log(`[UsersController]: info about user ( ${userInfo.email} ) sent`);
 		}
 	}
+
+	async changeName(req: Request, res: Response, next: NextFunction): Promise<void> {
+		try {
+			await this.userService.changeUserName(Number(req.params.id), req.body.name);
+			this.ok(res, { status: `user #${req.params.id} updated` });
+			this.loggerService.log(`[UsersController]: user #${req.params.id} updated`);
+		} catch (e) {
+			return next(new HTTPError(401, 'user is not authorized', 'UsersController -> info'));
+		}
+	}
+
+	async changeEmail(req: Request, res: Response, next: NextFunction): Promise<void> {}
+
+	async changePassword(req: Request, res: Response, next: NextFunction): Promise<void> {}
 
 	private signJWT(id: number, email: string, secret: string): Promise<string> {
 		return new Promise((resolve, reject) => {

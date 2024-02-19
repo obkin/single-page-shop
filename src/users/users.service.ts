@@ -62,4 +62,36 @@ export class UsersService implements IUsersService {
 			}
 		}
 	}
+
+	async changeUserName(userId: number, newName: string): Promise<void> {
+		try {
+			this.usersRepository.changeName(userId, newName);
+		} catch (e) {
+			if (e instanceof Error) {
+				this.loggerService.error(`[PostsService]: ${e.message}`);
+			}
+		}
+	}
+
+	async changeUserEmail(userId: number, newEmail: string): Promise<void | boolean> {
+		try {
+			// ...
+			return true;
+		} catch (e) {
+			if (e instanceof Error) {
+				this.loggerService.error(`[PostsService]: ${e.message}`);
+			}
+		}
+	}
+
+	async changeUserPass(userId: number, newPass: string): Promise<void | boolean> {
+		try {
+			// ...
+			return true;
+		} catch (e) {
+			if (e instanceof Error) {
+				this.loggerService.error(`[PostsService]: ${e.message}`);
+			}
+		}
+	}
 }
