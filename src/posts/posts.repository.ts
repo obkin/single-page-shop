@@ -9,7 +9,7 @@ import { Post } from './post.entity';
 export class PostsRepository implements IPostsRepository {
 	constructor(@inject(TYPES.PrismaService) private prismaService: PrismaService) {}
 
-	async create({ title, body, userId }: Post): Promise<PostModel | void> {
+	async create({ title, body }: Post, userId: number): Promise<PostModel | void> {
 		try {
 			return await this.prismaService.client.postModel.create({
 				data: {

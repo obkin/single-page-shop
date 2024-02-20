@@ -8,8 +8,4 @@ export class PostCreateDto {
 	@IsString({ message: 'body must be a string' })
 	@IsNotEmpty({ message: 'body is required' })
 	body: string;
-
-	@IsString({ message: 'userId must be a string' })
-	@IsNotEmpty({ message: 'userId is required' })
-	userId: string;
 }

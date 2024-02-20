@@ -24,7 +24,7 @@ export class PostsController extends BaseController implements IPostsController 
 				path: '/add-post',
 				method: 'post',
 				func: this.addPost,
-				middlewares: [new ValidateMiddleware(PostCreateDto)],
+				middlewares: [new ValidateMiddleware(PostCreateDto), new AuthGuardMiddleware()],
 			},
 			{
 				main: '/posts',
@@ -69,7 +69,7 @@ export class PostsController extends BaseController implements IPostsController 
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		const result = await this.postsService.createPost(req.body);
+		const result = await this.postsService.createPost(req.body, Number(req.userId));
 		if (!result) {
 			next(new HTTPError(400, 'failed to create post', 'PostsController -> addPost'));
 		} else {

@@ -14,10 +14,10 @@ export class PostsService implements IPostsService {
 		@inject(TYPES.PostsRepoitory) private postsRepository: IPostsRepository,
 	) {}
 
-	async createPost({ title, body, userId }: PostCreateDto): Promise<PostModel | void> {
-		const newPost = new Post(title, body, Number(userId));
+	async createPost(post: PostCreateDto, userId: number): Promise<PostModel | void> {
+		const newPost = new Post(post.title, post.body);
 		try {
-			return await this.postsRepository.create(newPost);
+			return await this.postsRepository.create(newPost, userId);
 		} catch (e) {
 			if (e instanceof Error) {
 				this.loggerService.error(`[PostsService]: ${e.message}`);
