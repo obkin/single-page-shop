@@ -118,7 +118,8 @@ export class PostsService implements IPostsService {
 						}
 					}
 				} else {
-					this.loggerService.error(`[PostsService]: user #${userId} doesn't have post #${postId}`);
+					// eslint-disable-next-line prettier/prettier
+					this.loggerService.error(`[PostsService]: user #${userId} isn't an owner of post #${postId}`);
 				}
 			} else {
 				this.loggerService.error(`[PostsService]: post #${postId} does not exist`);
