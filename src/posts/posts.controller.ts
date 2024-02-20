@@ -155,7 +155,7 @@ export class PostsController extends BaseController implements IPostsController 
 			// eslint-disable-next-line prettier/prettier
 			next(new HTTPError(404, `failed to remove post #${req.params.id}`, 'PostsController -> removePost'));
 		} else {
-			this.deleted(res, { message: `Post #${req.params.id} was deleted` });
+			this.deleted(res, { status: `Post #${req.params.id} was deleted` });
 			this.loggerService.log(`[PostsController]: post #${req.params.id} was deleted`);
 		}
 	}
@@ -167,7 +167,11 @@ export class PostsController extends BaseController implements IPostsController 
 			// eslint-disable-next-line prettier/prettier
 			next(new HTTPError(404, `failed to update post #${req.params.id}`, 'PostsController -> updatePost'));
 		} else {
-			this.ok(res, { message: `Post #${req.params.id} was updated` });
+			this.ok(res, {
+				status: `Post #${req.params.id} was updated`,
+				newTitle: result.title,
+				newBody: result.body,
+			});
 			this.loggerService.log(`[PostsController]: post #${req.params.id} was updated`);
 		}
 	}
