@@ -161,9 +161,11 @@ export class PostsController extends BaseController implements IPostsController 
 	}
 
 	async updatePost(req: Request, res: Response, next: NextFunction): Promise<void> {
-		const result = await this.postsService.updatePost(Number(req.params.id), req.body);
+		// eslint-disable-next-line prettier/prettier
+		const result = await this.postsService.updatePost(Number(req.params.id), req.body, Number(req.userId));
 		if (!result) {
-			next(new HTTPError(404, `post #${req.params.id} not found`, 'PostsController -> updatePost'));
+			// eslint-disable-next-line prettier/prettier
+			next(new HTTPError(404, `failed to update post #${req.params.id}`, 'PostsController -> updatePost'));
 		} else {
 			this.ok(res, { message: `Post #${req.params.id} was updated` });
 			this.loggerService.log(`[PostsController]: post #${req.params.id} was updated`);

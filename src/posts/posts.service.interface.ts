@@ -8,7 +8,7 @@ interface IPostsService {
 	getAllPosts(limit?: number, page?: number): Promise<any | void>;
 	getAllUserPosts(userId: number, limit?: number, page?: number): Promise<any | void>;
 	removePost(postId: number, userId: number): Promise<any | void>;
-	updatePost(postId: number, updatedData: Post): Promise<PostModel | void>;
+	updatePost(postId: number, updatedData: Post, userId: number): Promise<PostModel | void>;
 }
 
 export { IPostsService };

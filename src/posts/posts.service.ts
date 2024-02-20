@@ -119,7 +119,7 @@ export class PostsService implements IPostsService {
 					}
 				} else {
 					// eslint-disable-next-line prettier/prettier
-					this.loggerService.error(`[PostsService]: user #${userId} isn't an owner of post #${postId}`);
+					this.loggerService.error(`[PostsService]: user #${userId} is not an owner of post #${postId}`);
 				}
 			} else {
 				this.loggerService.error(`[PostsService]: post #${postId} does not exist`);
@@ -131,22 +131,39 @@ export class PostsService implements IPostsService {
 		}
 	}
 
-	async updatePost(postId: number, updatedData: Post): Promise<PostModel | void> {
+	async updatePost(postId: number, updatedData: Post, userId: number): Promise<PostModel | void> {
 		try {
-			const currentPost = await this.postsRepository.findOne(postId);
+			const postBelongsToUser = await this.postsRepository.findOne(postId);
 
-			if (currentPost) {
-				try {
-					const updateForPost = {
-						title: updatedData.title ? updatedData.title : currentPost.title,
-						body: updatedData.body ? updatedData.body : currentPost.body,
-					};
-					return await this.postsRepository.update(postId, updateForPost as Post);
-				} catch (e) {
-					if (e instanceof Error) {
-						this.loggerService.error(`[PostsService]: ${e.message}`);
+			if (postBelongsToUser) {
+				if (postBelongsToUser.userId === userId) {
+					try {
+						const currentPost = await this.postsRepository.findOne(postId);
+
+						if (currentPost) {
+							try {
+								const updateForPost = {
+									title: updatedData.title ? updatedData.title : currentPost.title,
+									body: updatedData.body ? updatedData.body : currentPost.body,
+								};
+								return await this.postsRepository.update(postId, updateForPost as Post);
+							} catch (e) {
+								if (e instanceof Error) {
+									this.loggerService.error(`[PostsService]: ${e.message}`);
+								}
+							}
+						}
+					} catch (e) {
+						if (e instanceof Error) {
+							this.loggerService.error(`[PostsService]: ${e.message}`);
+						}
 					}
+				} else {
+					// eslint-disable-next-line prettier/prettier
+					this.loggerService.error(`[PostsService]: user #${userId} is not an owner of post #${postId}`);
 				}
+			} else {
+				this.loggerService.error(`[PostsService]: post #${postId} does not exist`);
 			}
 		} catch (e) {
 			if (e instanceof Error) {
