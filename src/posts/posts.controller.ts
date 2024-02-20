@@ -52,14 +52,14 @@ export class PostsController extends BaseController implements IPostsController 
 				path: '/remove-post/:id',
 				method: 'delete',
 				func: this.removePost,
-				middlewares: [], // new AuthGuardMiddleware()
+				middlewares: [new AuthGuardMiddleware()],
 			},
 			{
 				main: '/posts',
 				path: '/update-post/:id',
 				method: 'put',
 				func: this.updatePost,
-				middlewares: [], // new AuthGuardMiddleware()
+				middlewares: [new AuthGuardMiddleware()],
 			},
 		]);
 	}
@@ -150,9 +150,10 @@ export class PostsController extends BaseController implements IPostsController 
 	}
 
 	async removePost(req: Request, res: Response, next: NextFunction): Promise<void> {
-		const result = await this.postsService.removePost(Number(req.params.id));
+		const result = await this.postsService.removePost(Number(req.params.id), Number(req.userId));
 		if (!result) {
-			next(new HTTPError(404, `post #${req.params.id} not found`, 'PostsController -> removePost'));
+			// eslint-disable-next-line prettier/prettier
+			next(new HTTPError(404, `failed to remove post #${req.params.id}`, 'PostsController -> removePost'));
 		} else {
 			this.deleted(res, { message: `Post #${req.params.id} was deleted` });
 			this.loggerService.log(`[PostsController]: post #${req.params.id} was deleted`);

@@ -104,9 +104,25 @@ export class PostsService implements IPostsService {
 		}
 	}
 
-	async removePost(postId: number): Promise<any | void> {
+	async removePost(postId: number, userId: number): Promise<any | void> {
 		try {
-			return await this.postsRepository.remove(postId);
+			const postBelongsToUser = await this.postsRepository.findOne(postId);
+
+			if (postBelongsToUser) {
+				if (postBelongsToUser.userId === userId) {
+					try {
+						return await this.postsRepository.remove(postId);
+					} catch (e) {
+						if (e instanceof Error) {
+							this.loggerService.error(`[PostsService]: ${e.message}`);
+						}
+					}
+				} else {
+					this.loggerService.error(`[PostsService]: user #${userId} doesn't have post #${postId}`);
+				}
+			} else {
+				this.loggerService.error(`[PostsService]: post #${postId} does not exist`);
+			}
 		} catch (e) {
 			if (e instanceof Error) {
 				this.loggerService.error(`[PostsService]: ${e.message}`);

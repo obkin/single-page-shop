@@ -19,7 +19,7 @@ abstract class BaseController {
 	public send<T>(res: Response, code: number, message: T, totalCount?: string): ExpressReturnType {
 		res.type('application/json');
 		res.set('Access-Control-Expose-Headers', 'X-Total-Count');
-		res.header('X-Total-Count', totalCount);
+		res.header('X-Total-Count', String(totalCount));
 		return res.status(code).json(message);
 	}
 
