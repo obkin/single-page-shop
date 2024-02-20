@@ -45,21 +45,21 @@ export class PostsController extends BaseController implements IPostsController 
 				path: '/get-user-posts',
 				method: 'get',
 				func: this.getUserPosts,
-				middlewares: [],
+				middlewares: [new AuthGuardMiddleware()],
 			},
 			{
 				main: '/posts',
 				path: '/remove-post/:id',
 				method: 'delete',
 				func: this.removePost,
-				middlewares: [],
+				middlewares: [], // new AuthGuardMiddleware()
 			},
 			{
 				main: '/posts',
 				path: '/update-post/:id',
 				method: 'put',
 				func: this.updatePost,
-				middlewares: [],
+				middlewares: [], // new AuthGuardMiddleware()
 			},
 		]);
 	}
@@ -135,21 +135,17 @@ export class PostsController extends BaseController implements IPostsController 
 	): Promise<void> {
 		const totalCount = await this.postsService.getAllUserPosts(Number(req.userId));
 
-		if (req.userId) {
-			const result = await this.postsService.getAllUserPosts(
-				Number(req.userId),
-				Number(req.query.limit),
-				Number(req.query.page),
-			);
+		const result = await this.postsService.getAllUserPosts(
+			Number(req.userId),
+			Number(req.query.limit),
+			Number(req.query.page),
+		);
 
-			if (!result) {
-				next(new HTTPError(404, `posts not found`, 'PostsController -> getUserPosts'));
-			} else {
-				this.ok(res, result, totalCount.length);
-				this.loggerService.log(`[PostsController]: posts sent to user`);
-			}
+		if (!result) {
+			next(new HTTPError(404, `posts not found`, 'PostsController -> getUserPosts'));
 		} else {
-			next(new HTTPError(401, 'user is not authorized', 'PostsController -> getUserPosts'));
+			this.ok(res, result, totalCount.length);
+			this.loggerService.log(`[PostsController]: posts sent to user`);
 		}
 	}
 
