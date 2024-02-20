@@ -63,9 +63,9 @@ export class UsersService implements IUsersService {
 		}
 	}
 
-	async changeUserName(userId: number, newName: string): Promise<void> {
+	async changeUserName(userId: number, newName: string): Promise<UserModel | void> {
 		try {
-			this.usersRepository.changeName(userId, newName);
+			return this.usersRepository.changeName(userId, newName);
 		} catch (e) {
 			if (e instanceof Error) {
 				this.loggerService.error(`[PostsService]: ${e.message}`);

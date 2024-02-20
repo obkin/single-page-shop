@@ -27,7 +27,7 @@ class UsersRepository implements IUsersRepository {
 
 	async find(email: string): Promise<UserModel | null | void> {
 		try {
-			return this.prismaService.client.userModel.findFirst({
+			return await this.prismaService.client.userModel.findFirst({
 				where: {
 					email,
 				},
@@ -39,9 +39,9 @@ class UsersRepository implements IUsersRepository {
 		}
 	}
 
-	async changeName(userId: number, newName: string): Promise<void> {
+	async changeName(userId: number, newName: string): Promise<UserModel | void> {
 		try {
-			this.prismaService.client.userModel.update({
+			return await this.prismaService.client.userModel.update({
 				where: {
 					id: userId,
 				},
@@ -58,7 +58,7 @@ class UsersRepository implements IUsersRepository {
 
 	async changeEmail(userId: number, newEmail: string): Promise<void> {
 		try {
-			this.prismaService.client.userModel.update({
+			await this.prismaService.client.userModel.update({
 				where: {
 					id: userId,
 				},

@@ -7,7 +7,7 @@ interface IUsersService {
 	validateUser(dto: UserLoginDto): Promise<boolean | void>;
 	findUser(email: string): Promise<UserModel | null | void>;
 
-	changeUserName(userId: number, newName: string): Promise<void>;
+	changeUserName(userId: number, newName: string): Promise<UserModel | void>;
 	changeUserEmail(userId: number, newEmail: string): Promise<void | boolean>;
 	changeUserPass(userId: number, newPass: string): Promise<void | boolean>;
 }

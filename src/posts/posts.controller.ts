@@ -8,6 +8,7 @@ import { IPostsService } from './posts.service.interface';
 import { PostCreateDto } from './dto/post-create-dto';
 import { HTTPError } from '../exceptions/http-error.class';
 import { ValidateMiddleware } from '../common/validate.middleware';
+import { AuthGuardMiddleware } from '../common/auth.guard';
 
 @injectable()
 export class PostsController extends BaseController implements IPostsController {

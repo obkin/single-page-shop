@@ -47,7 +47,7 @@ export class UsersController extends BaseController implements IUsersController 
 			},
 			{
 				main: '/users',
-				path: '/change-name/:id',
+				path: '/change-name',
 				method: 'put',
 				func: this.changeName,
 				middlewares: [new AuthGuardMiddleware()],
@@ -79,7 +79,7 @@ export class UsersController extends BaseController implements IUsersController 
 		if (!result) {
 			return next(new HTTPError(422, 'such user already exists', 'UsersController -> register'));
 		} else {
-			this.created(res, { status: 'registered', email: result.email, id: result.id });
+			this.created(res, { message: 'registered', email: result.email, id: result.id });
 			this.loggerService.log(`[UsersController]: new user ( ${result.email} ) registered`);
 		}
 	}
@@ -130,12 +130,13 @@ export class UsersController extends BaseController implements IUsersController 
 	}
 
 	async changeName(req: Request, res: Response, next: NextFunction): Promise<void> {
-		try {
-			await this.userService.changeUserName(Number(req.params.id), req.body.name);
-			this.ok(res, { status: `user #${req.params.id} updated` });
-			this.loggerService.log(`[UsersController]: user #${req.params.id} updated`);
-		} catch (e) {
+		const result = await this.userService.changeUserName(Number(req.userId), req.body.name);
+
+		if (!result) {
 			return next(new HTTPError(401, 'user is not authorized', 'UsersController -> info'));
+		} else {
+			this.ok(res, { message: `user #${result.id} updated`, newName: result.userName });
+			this.loggerService.log(`[UsersController]: user #${result.id} updated`);
 		}
 	}
 
