@@ -16,6 +16,7 @@ model UserModel {
   email     String
   password  String
   createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
   posts     PostModel[]
   comments  CommentModel[]
 }
@@ -25,6 +26,7 @@ model PostModel {
   title     String
   body      String
   createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
   userId    Int?
   user      UserModel?     @relation(fields: [userId], references: [id])
   comments  CommentModel[]
@@ -34,6 +36,7 @@ model CommentModel {
   id        Int       @id @default(autoincrement())
   content   String
   createdAt DateTime  @default(now())
+  updatedAt DateTime       @updatedAt
   postId    Int
   post      PostModel @relation(fields: [postId], references: [id])
   userId    Int
