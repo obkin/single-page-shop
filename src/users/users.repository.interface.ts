@@ -3,7 +3,8 @@ import { User } from './user.entity';
 
 interface IUsersRepository {
 	create: (user: User) => Promise<UserModel | void>;
-	find: (email: string) => Promise<UserModel | null | void>;
+	findByEmail: (email: string) => Promise<UserModel | null | void>;
+	findById: (userId: number) => Promise<UserModel | null | void>;
 
 	changeName: (userId: number, newName: string) => Promise<UserModel | void>;
 	changeEmail: (userId: number, newEmail: string) => Promise<void>;

@@ -79,7 +79,7 @@ export class PostsController extends BaseController implements IPostsController 
 					title: result.title,
 					body: result.body,
 					createdAt: result.createdAt,
-					// updatedAt: result.updatedAt,
+					updatedAt: result.updatedAt,
 					ownerId: result.userId,
 				},
 			});

@@ -25,7 +25,7 @@ class UsersRepository implements IUsersRepository {
 		}
 	}
 
-	async find(email: string): Promise<UserModel | null | void> {
+	async findByEmail(email: string): Promise<UserModel | null | void> {
 		try {
 			return await this.prismaService.client.userModel.findFirst({
 				where: {
@@ -36,6 +36,21 @@ class UsersRepository implements IUsersRepository {
 			if (e instanceof Error) {
 				throw new Error(e.message);
 			}
+		}
+	}
+
+	async findById(userId: number): Promise<UserModel | null | void> {
+		try {
+			return await this.prismaService.client.userModel.findFirst({
+				where: {
+					id: userId,
+				},
+			});
+		} catch (e) {
+			if (e instanceof Error) {
+				throw new Error(e.message);
+			}
+			return null;
 		}
 	}
 

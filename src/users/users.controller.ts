@@ -96,7 +96,7 @@ export class UsersController extends BaseController implements IUsersController 
 				new HTTPError(401, `( ${req.body.email} ) wrong credentials`, 'UsersController -> login'),
 			);
 		} else {
-			const userData = await this.userService.findUser(req.body.email);
+			const userData = await this.userService.findUserByEmail(req.body.email);
 
 			if (userData) {
 				const jwt = await this.signJWT(
@@ -113,7 +113,7 @@ export class UsersController extends BaseController implements IUsersController 
 	}
 
 	async info({ userEmail }: Request, res: Response, next: NextFunction): Promise<void> {
-		const userInfo = await this.userService.findUser(userEmail);
+		const userInfo = await this.userService.findUserByEmail(userEmail);
 
 		if (!userInfo) {
 			return next(new HTTPError(401, 'user is not authorized', 'UsersController -> info'));
@@ -133,7 +133,8 @@ export class UsersController extends BaseController implements IUsersController 
 		const result = await this.userService.changeUserName(Number(req.userId), req.body.name);
 
 		if (!result) {
-			return next(new HTTPError(401, 'user is not authorized', 'UsersController -> info'));
+			// eslint-disable-next-line prettier/prettier
+			return next(new HTTPError(404, `user #${req.userId} does not exist`, 'UsersController -> info'));
 		} else {
 			this.ok(res, { message: `user #${result.id} updated`, newName: result.userName });
 			this.loggerService.log(`[UsersController]: user #${result.id} updated`);

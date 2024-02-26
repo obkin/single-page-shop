@@ -22,7 +22,7 @@ export class UsersService implements IUsersService {
 			const newUser = new User(email, name);
 			const salt = this.configService.get('SALT');
 			await newUser.setPassword(password, Number(salt));
-			const existUser = await this.usersRepository.find(email);
+			const existUser = await this.usersRepository.findByEmail(email);
 			if (existUser) {
 				return null;
 			} else {
@@ -37,7 +37,7 @@ export class UsersService implements IUsersService {
 
 	async validateUser({ email, password }: UserLoginDto): Promise<boolean | void> {
 		try {
-			const existUser = await this.usersRepository.find(email);
+			const existUser = await this.usersRepository.findByEmail(email);
 			if (existUser) {
 				const newUser = new User(existUser.email, existUser.userName, existUser.password);
 				return newUser.comparePassword(password);
@@ -51,10 +51,10 @@ export class UsersService implements IUsersService {
 		}
 	}
 
-	async findUser(email: string): Promise<UserModel | null | void> {
+	async findUserByEmail(email: string): Promise<UserModel | null | void> {
 		try {
 			if (email) {
-				return await this.usersRepository.find(email);
+				return await this.usersRepository.findByEmail(email);
 			}
 		} catch (e) {
 			if (e instanceof Error) {
@@ -63,9 +63,14 @@ export class UsersService implements IUsersService {
 		}
 	}
 
-	async changeUserName(userId: number, newName: string): Promise<UserModel | void> {
+	async changeUserName(userId: number, newName: string): Promise<UserModel | void | null> {
 		try {
-			return this.usersRepository.changeName(userId, newName);
+			const user = await this.usersRepository.findById(userId);
+			if (user) {
+				return await this.usersRepository.changeName(userId, newName);
+			} else {
+				return null;
+			}
 		} catch (e) {
 			if (e instanceof Error) {
 				this.loggerService.error(`[PostsService]: ${e.message}`);
