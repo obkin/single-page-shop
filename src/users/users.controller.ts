@@ -130,14 +130,18 @@ export class UsersController extends BaseController implements IUsersController 
 	}
 
 	async changeName(req: Request, res: Response, next: NextFunction): Promise<void> {
-		const result = await this.userService.changeUserName(Number(req.userId), req.body.name);
+		if (req.body.newName) {
+			const result = await this.userService.changeUserName(Number(req.userId), req.body.newName);
 
-		if (!result) {
-			// eslint-disable-next-line prettier/prettier
-			return next(new HTTPError(404, `user #${req.userId} does not exist`, 'UsersController -> info'));
+			if (!result) {
+				// eslint-disable-next-line prettier/prettier
+				return next(new HTTPError(404, `user #${req.userId} does not exist`, 'UsersController -> info'));
+			} else {
+				this.ok(res, { message: `user #${result.id} updated`, newName: result.userName });
+				this.loggerService.log(`[UsersController]: user #${result.id} updated`);
+			}
 		} else {
-			this.ok(res, { message: `user #${result.id} updated`, newName: result.userName });
-			this.loggerService.log(`[UsersController]: user #${result.id} updated`);
+			return next(new HTTPError(404, `enter a new name for user`, 'UsersController -> info'));
 		}
 	}
 
