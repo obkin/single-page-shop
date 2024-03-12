@@ -73,14 +73,7 @@ class UsersRepository implements IUsersRepository {
 
 	async changeEmail(userId: number, newEmail: string): Promise<void> {
 		try {
-			await this.prismaService.client.userModel.update({
-				where: {
-					id: userId,
-				},
-				data: {
-					email: newEmail,
-				},
-			});
+			// ...
 		} catch (e) {
 			if (e instanceof Error) {
 				throw new Error(e.message);
@@ -88,9 +81,16 @@ class UsersRepository implements IUsersRepository {
 		}
 	}
 
-	async changePass(userId: number, newPass: string): Promise<void> {
+	async changePass(userId: number, newPass: string): Promise<UserModel | void> {
 		try {
-			// ...
+			return await this.prismaService.client.userModel.update({
+				where: {
+					id: userId,
+				},
+				data: {
+					password: newPass,
+				},
+			});
 		} catch (e) {
 			if (e instanceof Error) {
 				throw new Error(e.message);

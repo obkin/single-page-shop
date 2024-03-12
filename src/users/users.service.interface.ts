@@ -9,7 +9,11 @@ interface IUsersService {
 
 	changeUserName(userId: number, newName: string): Promise<UserModel | void | null>;
 	changeUserEmail(userId: number, newEmail: string): Promise<void | boolean>;
-	changeUserPass(userId: number, newPass: string): Promise<void | boolean>;
+	changeUserPass(
+		userId: number,
+		email: string,
+		newPass: string,
+	): Promise<UserModel | void | boolean | null>;
 }
 
 export { IUsersService };

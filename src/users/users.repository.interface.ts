@@ -8,7 +8,7 @@ interface IUsersRepository {
 
 	changeName: (userId: number, newName: string) => Promise<UserModel | void>;
 	changeEmail: (userId: number, newEmail: string) => Promise<void>;
-	changePass: (userId: number, newPass: string) => Promise<void>;
+	changePass: (userId: number, newPass: string) => Promise<UserModel | void>;
 }
 
 export { IUsersRepository };

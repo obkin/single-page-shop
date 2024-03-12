@@ -8,6 +8,7 @@ import { IUsersRepository } from './users.repository.interface';
 import { UserModel } from '@prisma/client';
 import { UserLoginDto } from './dto/user-login.dto';
 import { ILogger } from '../logger/logger.interface';
+import { hash } from 'bcryptjs';
 
 @injectable()
 export class UsersService implements IUsersService {
@@ -30,7 +31,7 @@ export class UsersService implements IUsersService {
 			}
 		} catch (e) {
 			if (e instanceof Error) {
-				this.loggerService.error(`[PostsService]: ${e.message}`);
+				this.loggerService.error(`[UsersService]: ${e.message}`);
 			}
 		}
 	}
@@ -46,7 +47,7 @@ export class UsersService implements IUsersService {
 			}
 		} catch (e) {
 			if (e instanceof Error) {
-				this.loggerService.error(`[PostsService]: ${e.message}`);
+				this.loggerService.error(`[UsersService]: ${e.message}`);
 			}
 		}
 	}
@@ -58,7 +59,7 @@ export class UsersService implements IUsersService {
 			}
 		} catch (e) {
 			if (e instanceof Error) {
-				this.loggerService.error(`[PostsService]: ${e.message}`);
+				this.loggerService.error(`[UsersService]: ${e.message}`);
 			}
 		}
 	}
@@ -73,7 +74,7 @@ export class UsersService implements IUsersService {
 			}
 		} catch (e) {
 			if (e instanceof Error) {
-				this.loggerService.error(`[PostsService]: ${e.message}`);
+				this.loggerService.error(`[UsersService]: ${e.message}`);
 			}
 		}
 	}
@@ -84,18 +85,36 @@ export class UsersService implements IUsersService {
 			return true;
 		} catch (e) {
 			if (e instanceof Error) {
-				this.loggerService.error(`[PostsService]: ${e.message}`);
+				this.loggerService.error(`[UsersService]: ${e.message}`);
 			}
 		}
 	}
 
-	async changeUserPass(userId: number, newPass: string): Promise<void | boolean> {
+	async changeUserPass(
+		userId: number,
+		email: string,
+		newPass: string,
+	): Promise<UserModel | void | boolean | null> {
 		try {
-			// ...
-			return true;
+			const existUser = await this.usersRepository.findByEmail(email);
+
+			if (existUser) {
+				try {
+					const hashedPass = await hash(newPass, Number(this.configService.get('SALT')));
+					const updatedUser = await this.usersRepository.changePass(userId, hashedPass);
+					return updatedUser || null;
+				} catch (e) {
+					if (e instanceof Error) {
+						this.loggerService.error(`[UsersService]: ${e.message}`);
+					}
+				}
+			} else {
+				this.loggerService.error(`[UsersService]: user ( ${email} ) does not exist`);
+				return false;
+			}
 		} catch (e) {
 			if (e instanceof Error) {
-				this.loggerService.error(`[PostsService]: ${e.message}`);
+				this.loggerService.error(`[UsersService]: ${e.message}`);
 			}
 		}
 	}

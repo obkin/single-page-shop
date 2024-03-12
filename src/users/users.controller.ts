@@ -13,6 +13,7 @@ import { IUsersService } from './users.service.interface';
 import { IConfigService } from '../config/config.service.interface';
 import { AuthGuardMiddleware } from '../common/auth.guard';
 import 'reflect-metadata';
+import { UserModel } from '@prisma/client';
 
 @injectable()
 export class UsersController extends BaseController implements IUsersController {
@@ -54,14 +55,14 @@ export class UsersController extends BaseController implements IUsersController 
 			},
 			{
 				main: '/users',
-				path: '/change-email/:id',
+				path: '/change-email',
 				method: 'put',
 				func: this.changeEmail,
 				middlewares: [new AuthGuardMiddleware()],
 			},
 			{
 				main: '/users',
-				path: '/change-pass/:id',
+				path: '/change-pass',
 				method: 'put',
 				func: this.changePassword,
 				middlewares: [new AuthGuardMiddleware()],
@@ -135,19 +136,54 @@ export class UsersController extends BaseController implements IUsersController 
 
 			if (!result) {
 				// eslint-disable-next-line prettier/prettier
-				return next(new HTTPError(404, `user #${req.userId} does not exist`, 'UsersController -> info'));
+				return next(new HTTPError(404, `user #${req.userId} does not exist`, 'UsersController -> changeName'));
 			} else {
 				this.ok(res, { message: `user #${result.id} updated`, newName: result.userName });
 				this.loggerService.log(`[UsersController]: user #${result.id} updated`);
 			}
 		} else {
-			return next(new HTTPError(404, `enter a new name for user`, 'UsersController -> info'));
+			return next(new HTTPError(422, `enter a new name for user`, 'UsersController -> changeName'));
 		}
 	}
 
 	async changeEmail(req: Request, res: Response, next: NextFunction): Promise<void> {}
 
-	async changePassword(req: Request, res: Response, next: NextFunction): Promise<void> {}
+	async changePassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+		if (req.body.oldPass && req.body.newPass) {
+			const validatedUser = await this.userService.validateUser({
+				email: req.userEmail,
+				password: req.body.oldPass,
+			});
+
+			if (validatedUser) {
+				try {
+					const updatedUser = await this.userService.changeUserPass(
+						req.userId,
+						req.userEmail,
+						req.body.newPass,
+					);
+
+					if (updatedUser) {
+						const user = updatedUser as UserModel;
+						this.ok(res, { message: `user #${user.id} updated` });
+						this.loggerService.log(`[UsersController]: user #${user.id} updated`);
+					} else {
+						// eslint-disable-next-line prettier/prettier
+						return next(new HTTPError(400, `failed to change the password`, 'UsersController -> changePassword'));
+					}
+				} catch (e) {
+					// eslint-disable-next-line prettier/prettier
+					return next(new HTTPError(400, `failed to change the password`, 'UsersController -> changePassword'));
+				}
+			} else {
+				// eslint-disable-next-line prettier/prettier
+				return next(new HTTPError(401, `wrong password or such user does not exist`, 'UsersController -> changePassword'));
+			}
+		} else {
+			// eslint-disable-next-line prettier/prettier
+			return next(new HTTPError(422, `enter old and new password`, 'UsersController -> changePassword'));
+		}
+	}
 
 	private signJWT(id: number, email: string, secret: string): Promise<string> {
 		return new Promise((resolve, reject) => {
