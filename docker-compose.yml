@@ -1,0 +1,24 @@
+version: '3.5'
+
+services:
+  database:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: test-db
+    ports:
+      - "5432:5432"
+
+  ts-server:
+    build: .
+    ports:
+      - "8870:8870"
+    environment:
+      DATABASE_USER: admin
+      DATABASE_PASSWORD: 123456
+      DATABASE_DB: test-db
+      DATABASE_PORT: 5432
+      DATABASE_HOST: postgres
+    depends_on:
+      - database

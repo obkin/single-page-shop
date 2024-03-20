@@ -132,14 +132,17 @@ export class UsersController extends BaseController implements IUsersController 
 
 	async changeName(req: Request, res: Response, next: NextFunction): Promise<void> {
 		if (req.body.newName) {
-			const result = await this.userService.changeUserName(Number(req.userId), req.body.newName);
+			const updatedUser = await this.userService.changeUserName(
+				Number(req.userId),
+				req.body.newName,
+			);
 
-			if (!result) {
+			if (!updatedUser) {
 				// eslint-disable-next-line prettier/prettier
-				return next(new HTTPError(404, `user #${req.userId} does not exist`, 'UsersController -> changeName'));
+				return next(new HTTPError(404, `user #${req.userId} not found`, 'UsersController -> changeName'));
 			} else {
-				this.ok(res, { message: `user #${result.id} updated`, newName: result.userName });
-				this.loggerService.log(`[UsersController]: user #${result.id} updated`);
+				this.ok(res, { message: `user #${updatedUser.id} updated`, newName: updatedUser.userName });
+				this.loggerService.log(`[UsersController]: user #${updatedUser.id} updated`);
 			}
 		} else {
 			return next(new HTTPError(422, `enter a new name for user`, 'UsersController -> changeName'));
@@ -169,11 +172,11 @@ export class UsersController extends BaseController implements IUsersController 
 						this.loggerService.log(`[UsersController]: user #${user.id} updated`);
 					} else {
 						// eslint-disable-next-line prettier/prettier
-						return next(new HTTPError(400, `failed to change the password`, 'UsersController -> changePassword'));
+						return next(new HTTPError(400, `failed to change password`, 'UsersController -> changePassword'));
 					}
 				} catch (e) {
 					// eslint-disable-next-line prettier/prettier
-					return next(new HTTPError(400, `failed to change the password`, 'UsersController -> changePassword'));
+					return next(new HTTPError(400, `failed to change password`, 'UsersController -> changePassword'));
 				}
 			} else {
 				// eslint-disable-next-line prettier/prettier

@@ -26,7 +26,7 @@ export class App {
 		@inject(TYPES.PostsController) private postsController: PostsController,
 	) {
 		this.app = express();
-		this.port = 8870;
+		this.port = Number(this.configService.get('PORT')) || 8870;
 	}
 
 	useMiddlewares(): void {
