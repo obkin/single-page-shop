@@ -1,7 +1,9 @@
 version: '3.5'
 
 services:
+
   database:
+    container_name: postgres
     image: postgres:latest
     environment:
       POSTGRES_USER: admin
@@ -9,16 +11,29 @@ services:
       POSTGRES_DB: test-db
     ports:
       - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
-  ts-server:
-    build: .
+  server:
+    container_name: server
+    build: 
+      context: .
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
     ports:
       - "8870:8870"
     environment:
-      DATABASE_USER: admin
-      DATABASE_PASSWORD: 123456
-      DATABASE_DB: test-db
-      DATABASE_PORT: 5432
-      DATABASE_HOST: postgres
+      # DATABASE_USER: admin
+      # DATABASE_PASSWORD: 123456
+      # DATABASE_DB: test-db
+      # DATABASE_PORT: 5432
+      # DATABASE_HOST: postgres
+      DATABASE_URL: postgresql://admin:123456@postgres:5432/test-db?schema=public
     depends_on:
       - database
+
+volumes:
+  pgdata:
